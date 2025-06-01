@@ -18,7 +18,7 @@ function MyApp() {
         token: {
           colorPrimary: "#1775BB",
           colorBgContainer:
-            themeApp.theme === theme.defaultAlgorithm ? "#ffffff" : "#ffffff", //#0b1120cc, #0d1117,#121212
+            themeApp.theme === theme.defaultAlgorithm ? "#F8F8F8" : "#F8F8F8", //#0b1120cc, #0d1117,#121212
         },
       }}
       getPopupContainer={() => modalContainerRef.current as HTMLElement}

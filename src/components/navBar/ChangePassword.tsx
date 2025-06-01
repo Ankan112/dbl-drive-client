@@ -2,28 +2,27 @@ import { Card, Col, Row, Form, Input, Button, message } from "antd";
 import { LockOutlined, SendOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import { useChangeEmployeePasswordMutation } from "../../modules/employee/api/employeeEndPoint";
 import { setCommonModal } from "../../app/slice/modalSlice";
 
 const ChangeEmployeePassword = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [update, { isLoading, isSuccess }] =
-    useChangeEmployeePasswordMutation();
+  // const [update, { isLoading, isSuccess }] =
+  //   useChangeEmployeePasswordMutation();
 
   const onFinish = (data: any) => {
     if (data.new_password === data.old_password) {
       return message.error("Old password and new password can not be same");
     }
-    update(data);
+    // update(data);
   };
 
-  useEffect(() => {
-    if (isSuccess) {
-      dispatch(setCommonModal());
-      form.resetFields();
-    }
-  }, [isSuccess]);
+  // useEffect(() => {
+  //   if (isSuccess) {
+  //     dispatch(setCommonModal());
+  //     form.resetFields();
+  //   }
+  // }, [isSuccess]);
   return (
     <Row justify="center" align="middle" style={{ maxWidth: "auto" }}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -79,7 +78,7 @@ const ChangeEmployeePassword = () => {
                 htmlType="submit"
                 type="primary"
                 icon={<SendOutlined />}
-                loading={isLoading}
+                // loading={isLoading}
               >
                 Submit
               </Button>

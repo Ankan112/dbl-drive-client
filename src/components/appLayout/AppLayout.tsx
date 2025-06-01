@@ -3,6 +3,8 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  PlusOutlined,
+  SearchOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
@@ -15,6 +17,7 @@ import {
   MenuProps,
   Popover,
   theme,
+  Input,
 } from "antd";
 import { Footer } from "antd/es/layout/layout";
 import { useEffect, useState } from "react";
@@ -292,7 +295,8 @@ export const AppLayout = () => {
         style={{
           overflow: "auto",
           height: "100vh",
-          background: colorBgContainer,
+          // background: colorBgContainer,
+          background: "#F8F8F8",
           // width: "80%",
           position: "sticky",
           top: 0,
@@ -322,6 +326,15 @@ export const AppLayout = () => {
               />
             </div>
           )}
+          <div className="flex justify-center">
+            <Button
+              icon={<PlusOutlined />}
+              type="primary"
+              style={{ width: "80%", margin: "0 auto", borderRadius: "20px" }}
+            >
+              Create or Upload
+            </Button>
+          </div>
         </div>
         {/* {!collapsed && (
           <div
@@ -351,11 +364,7 @@ export const AppLayout = () => {
         <Header
           style={{
             padding: 0,
-            background:
-              roleId === 3
-                ? "linear-gradient(135deg, #8DC73F, #6EBF34)"
-                : "linear-gradient(135deg, #4e6ad0, #0d3c6e)",
-
+            background: "linear-gradient(135deg, #F8F8F8, #F8F8F8)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -378,7 +387,17 @@ export const AppLayout = () => {
                 height: 64,
               }}
             />
+            <div style={{ width: "350px" }}>
+              <Input
+                placeholder="Search"
+                width={"100%"}
+                size="large"
+                prefix={<SearchOutlined />}
+                style={{ borderRadius: "20px", background: "#fff" }}
+              />
+            </div>
           </div>
+
           <div
             style={{
               display: "flex",
@@ -388,19 +407,6 @@ export const AppLayout = () => {
               padding: "10px",
             }}
           >
-            {roleId !== 3 && (
-              <Link to={"/task/list"}>
-                <Button type="dashed">Task Manager</Button>
-              </Link>
-            )}
-            <Link to={"/tickets/list"}>
-              <Button type="dashed">Ticketing System</Button>
-            </Link>
-
-            <Popover content={selfService}>
-              <Button type="dashed">Self Service</Button>
-            </Popover>
-
             <Popover content={content}>
               <Button
                 icon={<UserOutlined />}
@@ -415,11 +421,7 @@ export const AppLayout = () => {
 
         <Content
           style={{
-            margin: "12px 12px",
-            // padding: 18,
-            // minHeight: 280,
-            // background: "rgb(255, 255, 255",
-            borderRadius: borderRadiusLG,
+            background: "#fff",
           }}
         >
           <Outlet />

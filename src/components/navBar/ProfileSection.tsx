@@ -7,7 +7,6 @@ import { setLogout } from "../../app/features/userSlice";
 import { setCommonModal } from "../../app/slice/modalSlice";
 import { useAppDispatch } from "../../app/store/store";
 import user from "../../assets/user.png";
-import UpdateEmployee from "../../modules/employee/components/UpdateEmployee";
 import ChangeEmployeePassword from "./ChangePassword";
 
 const ProfileSection = () => {
@@ -46,7 +45,7 @@ const ProfileSection = () => {
                 dispatch(
                   setCommonModal({
                     title: "Update Employee",
-                    content: <UpdateEmployee employee={record as any} />,
+                    content: "test",
                     show: true,
                     width: 678,
                   })
@@ -196,8 +195,7 @@ const ProfileSection = () => {
                 Role
               </p>
               <p style={{ fontWeight: 700, fontSize: "16px", color: "#333" }}>
-                :{" "}
-                {role_id === 1 && <Tag color="blue-inverse">SUPER ADMIN</Tag>}
+                : {role_id === 1 && <Tag color="blue-inverse">SUPER ADMIN</Tag>}
                 {role_id === 2 && <Tag color="geekblue">ADMIN</Tag>}
                 {role_id === 3 && <Tag color="orange-inverse">EMPLOYEE</Tag>}
               </p>
