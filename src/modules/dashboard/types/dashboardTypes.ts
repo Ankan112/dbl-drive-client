@@ -1,42 +1,19 @@
-export interface IViewDashboard {
-  total_member: {
-    total_pending: string;
-    total_active: string;
-    total_inactive: string;
-  };
+export interface ICreateFolder {
+  parent_id?: number;
+  name: string;
 }
-export interface IDashboardGraphData {
-  month: string;
-  total_assign_asset: number;
-  total_asset: number;
-}
-export interface IDashboardCalenderData {
+export interface IFolderList {
   id: number;
-  title: string;
-  color: string;
-  start_date: string;
-  end_date: string;
+  name: string;
+  parent_id: null | number;
   created_at: string;
-  status: string;
-  type: string;
-  date: string;
-  time: string;
-  application_name: string;
-  application_id: number;
+  updated_at: string;
+  created_by_name: string;
 }
-export interface INotification {
+
+export interface IFolderDetails {
   id: number;
-  member_id: number;
-  notification_type: string;
-  related_id: number;
-  message: string;
-  read_status: boolean;
-  created_at: string;
-}
-export interface IPieChartDataForAdmin {
-  accessories_count: number;
-  laptop_count: number;
-  monitor_count: number;
-  desktop_count: number;
-  printer_count: number;
+  name: string;
+  parent_id: number;
+  full_path: string;
 }

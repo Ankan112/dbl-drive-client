@@ -3,26 +3,29 @@ import { LockOutlined, SendOutlined } from "@ant-design/icons";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCommonModal } from "../../app/slice/modalSlice";
+import { useChangePasswordMutation } from "../../forget_api/forgetApi";
 
 const ChangeEmployeePassword = () => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  // const [update, { isLoading, isSuccess }] =
-  //   useChangeEmployeePasswordMutation();
+  const [update, { isSuccess }] = useChangePasswordMutation();
 
   const onFinish = (data: any) => {
-    if (data.new_password === data.old_password) {
+    if (data.newPassword !== data.confirmPassword) {
+      return message.error("Password and confirm password does not match");
+    }
+    if (data.newPassword === data.oldPassword) {
       return message.error("Old password and new password can not be same");
     }
-    // update(data);
+    update(data);
   };
 
-  // useEffect(() => {
-  //   if (isSuccess) {
-  //     dispatch(setCommonModal());
-  //     form.resetFields();
-  //   }
-  // }, [isSuccess]);
+  useEffect(() => {
+    if (isSuccess) {
+      dispatch(setCommonModal());
+      form.resetFields();
+    }
+  }, [isSuccess]);
   return (
     <Row justify="center" align="middle" style={{ maxWidth: "auto" }}>
       <Col xs={24} sm={24} md={24} lg={24} xl={24}>
@@ -37,7 +40,7 @@ const ChangeEmployeePassword = () => {
             <Row align={"middle"} gutter={[5, 16]}>
               <Col xs={24} sm={24} md={24}>
                 <Form.Item
-                  name="old_password"
+                  name="oldPassword"
                   label="Old Password"
                   rules={[
                     {
@@ -54,7 +57,7 @@ const ChangeEmployeePassword = () => {
               </Col>
               <Col xs={24} sm={24} md={24}>
                 <Form.Item
-                  name="new_password"
+                  name="newPassword"
                   label="New Password"
                   rules={[
                     {
@@ -66,6 +69,23 @@ const ChangeEmployeePassword = () => {
                   <Input.Password
                     prefix={<LockOutlined />}
                     placeholder="Enter New Password"
+                  />
+                </Form.Item>
+              </Col>
+              <Col xs={24} sm={24} md={24}>
+                <Form.Item
+                  name="confirmPassword"
+                  label="Confirm Password"
+                  rules={[
+                    {
+                      required: true,
+                      message: "Please enter your confirm password!",
+                    },
+                  ]}
+                >
+                  <Input.Password
+                    prefix={<LockOutlined />}
+                    placeholder="Enter Confirm Password"
                   />
                 </Form.Item>
               </Col>

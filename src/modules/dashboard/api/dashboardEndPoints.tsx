@@ -1,69 +1,37 @@
+import { message } from "antd";
 import { api } from "../../../app/api/api";
 import { HTTPResponse } from "../../../app/types/commonTypes";
-import { IPieChartDataForAdmin } from "../types/dashboardTypes";
+import asyncWrapper from "../../../utils/asyncWrapper";
+import {
+  ICreateFolder,
+  IFolderDetails,
+  IFolderList,
+} from "../types/dashboardTypes";
 
 export const dashboardEndpoints = api.injectEndpoints({
   endpoints: (build) => ({
-    getAllDashboard: build.query<HTTPResponse<any>, void>({
+    createFolder: build.mutation<HTTPResponse<void>, ICreateFolder>({
+      query: (body) => ({
+        url: "/folder/add",
+        method: "POST",
+        body: body,
+      }),
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        asyncWrapper(async () => {
+          message.success("Successfully Folder Created!");
+        });
+      },
+      invalidatesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+    }),
+    getFolderList: build.query<HTTPResponse<IFolderList[]>, void>({
       query: () => ({
-        url: `/dashboard/dashboard-data`,
+        url: `/folder/list`,
       }),
       providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
     }),
-    getDashboardPieData: build.query<HTTPResponse<any>, void>({
-      query: () => ({
-        url: `/dashboard/accessories-count`,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardBloodData: build.query<HTTPResponse<any>, void>({
-      query: () => ({
-        url: `/dashboard/blood-count`,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardGraphData: build.query<HTTPResponse<any>, any>({
-      query: (params) => ({
-        url: `/dashboard/dashboard-graph-data`,
-        params,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardAssetDataForAdmin: build.query<HTTPResponse<any>, any>({
-      query: () => ({
-        url: `/dashboard/admin-unit-wise-asset-count`,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardDistributedAssetDataForAdmin: build.query<
-      HTTPResponse<any>,
-      any
-    >({
-      query: () => ({
-        url: `/dashboard/employee-wise-asset-assign-count`,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardPieChartDataForAdmin: build.query<
-      HTTPResponse<IPieChartDataForAdmin>,
-      void
-    >({
-      query: () => ({
-        url: `/dashboard/admin-unit-wise-accessories`,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardEmployeeData: build.query<HTTPResponse<any>, any>({
-      query: (params) => ({
-        url: `/dashboard/dashboard-graph-data`,
-        params,
-      }),
-      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-    }),
-    getDashboardEmployeeDataForEmployee: build.query<HTTPResponse<any>, any>({
-      query: (params) => ({
-        url: `/dashboard/employee-data-count`,
-        params,
+    getFolderDetails: build.query<HTTPResponse<IFolderDetails>, number>({
+      query: (id) => ({
+        url: `/folder/details/${id}`,
       }),
       providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
     }),
@@ -71,13 +39,7 @@ export const dashboardEndpoints = api.injectEndpoints({
 });
 
 export const {
-  useGetAllDashboardQuery,
-  useGetDashboardGraphDataQuery,
-  useGetDashboardBloodDataQuery,
-  useGetDashboardPieDataQuery,
-  useGetDashboardEmployeeDataQuery,
-  useGetDashboardAssetDataForAdminQuery,
-  useGetDashboardPieChartDataForAdminQuery,
-  useGetDashboardDistributedAssetDataForAdminQuery,
-  useGetDashboardEmployeeDataForEmployeeQuery,
+  useCreateFolderMutation,
+  useGetFolderDetailsQuery,
+  useGetFolderListQuery,
 } = dashboardEndpoints;

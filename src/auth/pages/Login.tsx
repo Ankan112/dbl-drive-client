@@ -1,4 +1,3 @@
-
 import { LockOutlined, LoginOutlined, UserOutlined } from "@ant-design/icons";
 import { Col, Divider, Form, Image, Input, Row } from "antd";
 import { motion } from "framer-motion";
@@ -19,7 +18,7 @@ export const Login = () => {
   const [login, { isLoading }] = useLoginMutation();
   const onFinish = (values: any) => {
     const body = {
-      id: values.id,
+      email: values.email,
       password: values.password,
     };
     login(body);
@@ -54,7 +53,6 @@ export const Login = () => {
           className="w-full p-8 lg:p-10 flex flex-col justify-center"
         >
           <div className="max-w-sm mx-auto w-full">
-
             <div>
               <div className="flex justify-center">
                 <Image preview={false} height={160} src={logo} />
@@ -67,7 +65,7 @@ export const Login = () => {
                 <Row gutter={6}>
                   <Col xs={24}>
                     <Form.Item
-                      name="id"
+                      name="email"
                       label="Email"
                       rules={[
                         {
@@ -114,7 +112,7 @@ export const Login = () => {
                     </Form.Item>
                   </Col>
                   {/* <Divider style={{ marginTop: "0px", marginBottom: "10px" }} /> */}
-                  {/* <Col xs={24}>
+                  <Col xs={24}>
                     <div
                       style={{
                         display: "flex",
@@ -126,7 +124,7 @@ export const Login = () => {
                         <Link to="/forget-password"> Forget Password? </Link>
                       </span>
                     </div>
-                  </Col> */}
+                  </Col>
                 </Row>
               </Form>
             </div>

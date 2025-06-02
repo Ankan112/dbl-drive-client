@@ -8,7 +8,7 @@ export const forgetPassEndpoint = api.injectEndpoints({
   endpoints: (build) => ({
     getOTP: build.mutation<void, any>({
       query: (body) => ({
-        url: `/forget-password/send-otp`,
+        url: `/authentication/send-otp`,
         method: "POST",
         body: body,
       }),
@@ -22,7 +22,7 @@ export const forgetPassEndpoint = api.injectEndpoints({
 
     matchOtp: build.mutation<any, any>({
       query: (body) => ({
-        url: `/forget-password/verify-otp`,
+        url: `/authentication/verify-otp`,
         method: "POST",
         body: body,
       }),
@@ -36,7 +36,7 @@ export const forgetPassEndpoint = api.injectEndpoints({
 
     resetPassword: build.mutation<any, any>({
       query: ({ body, headers }) => ({
-        url: `/forget-password/reset-password`,
+        url: `/authentication/reset-password`,
         method: "POST",
         body: body,
         headers,
@@ -51,14 +51,14 @@ export const forgetPassEndpoint = api.injectEndpoints({
 
     changePassword: build.mutation<any, any>({
       query: (body) => ({
-        url: `/admin/profile/change-password`,
-        method: "POST",
+        url: `/profile/change-password`,
+        method: "PUT",
         body: body,
       }),
       onQueryStarted: (_arg, { queryFulfilled }) => {
         asyncWrapper(async () => {
           await queryFulfilled;
-          notification("success", "Successfully update password");
+          notification("success", "Successfully password changed");
         });
       },
     }),

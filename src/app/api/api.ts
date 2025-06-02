@@ -13,7 +13,7 @@ export const api = createApi({
   endpoints: (builder) => ({
     login: builder.mutation<
       ILoginResponse<IUser>,
-      { id: string; password: string }
+      { email: string; password: string }
     >({
       query: (body) => ({
         url: "/authentication/login",
@@ -25,12 +25,30 @@ export const api = createApi({
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         asyncWrapper(async () => {
           const { data } = await queryFulfilled;
-          console.log(data?.data);
+          console.log(data?.data?.token);
           dispatch(setToken(data?.data?.token!));
           dispatch(setRoleId(data.data?.role?.role_id!));
           await dispatch(userApi.endpoints.getMe.initiate());
           message.success("Successfully logged in!");
           localStorage.setItem("theme", "defaultTheme");
+        });
+      },
+    }),
+    logout: builder.mutation<void, void>({
+      query: () => ({
+        url: "/authentication/logout",
+        method: "PUT",
+      }),
+
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        asyncWrapper(async () => {
+          // const { data } = await queryFulfilled;
+          // console.log(data?.data?.token);
+          // dispatch(setToken(data?.data?.token!));
+          // dispatch(setRoleId(data.data?.role?.role_id!));
+          // await dispatch(userApi.endpoints.getMe.initiate());
+          message.success("Successfully logged out!");
+          // localStorage.setItem("theme", "defaultTheme");
         });
       },
     }),
@@ -87,4 +105,4 @@ export const api = createApi({
   ],
 });
 
-export const { useLoginMutation } = api;
+export const { useLoginMutation, useLogoutMutation } = api;
