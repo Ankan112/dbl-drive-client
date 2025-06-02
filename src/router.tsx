@@ -8,9 +8,9 @@ import { AppLayout } from "./components/appLayout/AppLayout";
 import ProfileSection from "./components/navBar/ProfileSection";
 import NotFound from "./components/notFound/NotFound";
 import UnauthorizePage from "./components/notFound/UnauthorizePage";
-import About from "./modules/about/page/About";
-import DashboardCards from "./modules/dashboard/Pages/DashboardCards";
-import UnitList from "./modules/Unit/pages/UnitList";
+
+import Dashboard from "./modules/dashboard/Pages/Dashboard";
+
 import ProtectedRoute from "./utils/ProtectRoute";
 import RequireUser from "./utils/requireUser";
 
@@ -53,7 +53,7 @@ export const routers = createBrowserRouter([
       {
         path: "/",
         // element: <RequireUser children={<DashboardDemo />} />,
-        element: <DashboardCards />,
+        element: <Dashboard />,
       },
       {
         path: "/setting/profile",

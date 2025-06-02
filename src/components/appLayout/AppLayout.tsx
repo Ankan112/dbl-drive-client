@@ -1,448 +1,178 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import {
-  LogoutOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PlusOutlined,
-  SearchOutlined,
-  UserOutlined,
-} from "@ant-design/icons";
-import {
-  Button,
-  Grid,
-  Image,
-  Layout,
-  Menu,
-  Dropdown,
-  MenuProps,
-  Popover,
-  theme,
-  Input,
-} from "antd";
-import { Footer } from "antd/es/layout/layout";
-import { useEffect, useState } from "react";
+import { LogoutOutlined, SearchOutlined, UserOutlined } from "@ant-design/icons";
+import { Button, Grid, Image, Layout, Menu, Popover, theme, Input, Avatar, Typography, Space } from "antd";
+import type { MenuInfo } from "rc-menu/lib/interface";
+import { useEffect, useState, useCallback } from "react";
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { setLogout } from "../../app/features/userSlice";
 import { RootState, useAppDispatch } from "../../app/store/store";
 import { menuItems } from "./AppLayoutData";
-// import LiveTime from "../Time/LiveTime";
 import { useSelector } from "react-redux";
-// import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
 import { api } from "../../app/api/api";
 import { useGetMeQuery } from "../../app/api/userApi";
 import logo from "../../assets/logo.png";
-import { roleID } from "../../utils/helper";
-// import Notification from "../notification/Notification";
-const { useBreakpoint } = Grid;
 
-const { Header, Sider, Content } = Layout;
-export const AppLayout = () => {
+const { useBreakpoint } = Grid;
+const { Header, Sider, Content, Footer } = Layout;
+const { Text } = Typography;
+
+export const AppLayout: React.FC = () => {
   const { data: profile } = useGetMeQuery();
   const [collapsed, setCollapsed] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
-  const [currentSelection, setCurrentSelection] = useState<string>("");
-  const [sidebarWidth, setSidebarWidth] = useState(240);
-  const [openKeys, setOpenKeys] = useState<Array<string>>([]);
+  const [sidebarWidth, setSidebarWidth] = useState(280);
+  const [openKeys, setOpenKeys] = useState<string[]>([]);
+  const [currentSelection, setCurrentSelection] = useState("");
+  
   const location = useLocation();
-  const gridBreak = useBreakpoint();
+  const screens = useBreakpoint();
   const { roleId } = useSelector((state: RootState) => state.userSlice);
   const dispatch = useAppDispatch();
-  const menu = (
-    <Menu>
-      <Menu.Item key="1">
-        <a
-          href="https://www.dropbox.com/scl/fi/xezlzy76ejnszoj7zah9a/System-Overview.pdf?rlkey=j16ellbggvjv4g6hpdhz63ksb&st=5weqe9nj&raw=1"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Helpdesk Overview
-        </a>
-      </Menu.Item>
-      <Menu.Item key="2">
-        <a
-          href="https://www.dropbox.com/scl/fi/qohmr0km29jnbdjmbtxrl/Ticket-Raise-Process.pdf?rlkey=qnfg48axugbctmuh24o1qiwse&st=cx5r02qk&raw=1"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Ticketing Process
-        </a>
-      </Menu.Item>
-      <Menu.Item key="3">
-        <a
-          href="https://www.dropbox.com/scl/fi/2oqld6escz4faz61e363n/Profile-Update.pdf?rlkey=qn4vrnmxq3cy8uhg3y2sh5jqo&st=l8rjrhe1&raw=1"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Profile Update
-        </a>
-      </Menu.Item>
-    </Menu>
-  );
-
   const navigate = useNavigate();
-  const handleLogout = () => {
+  const { token: { colorPrimary } } = theme.useToken();
+  
+  const isMobile = !screens.lg;
+  const isTablet = !screens.md;
+
+  const handleLogout = useCallback(() => {
     dispatch(setLogout());
     dispatch(api.util.resetApiState());
     navigate("/login");
-  };
-  const {
-    token: { colorBgContainer, borderRadiusLG },
-  } = theme.useToken();
-  console.log(roleID);
-  useEffect(() => {
-    const index = location.pathname.indexOf(
-      "/",
-      location.pathname.indexOf("/", location.pathname.indexOf("/") + 1) + 1
-    );
-    const result =
-      index !== -1 ? location.pathname.substring(0, index) : location.pathname;
-    setCurrentSelection(result);
-    const modulePath = location.pathname.split("/")[1];
-    setOpenKeys([modulePath]);
-  }, [location]);
+  }, [dispatch, navigate]);
 
-  const rootSubmenuKeys = menuItems(profile?.data).map(
-    (item: any) => item?.key
-  );
-  const onOpenChange: MenuProps["onOpenChange"] = (keys) => {
-    const latestOpenKey = keys.find((key) => openKeys.indexOf(key) === -1);
-    if (rootSubmenuKeys.indexOf(latestOpenKey!) === -1) {
-      setOpenKeys(keys);
-    } else {
-      setOpenKeys(latestOpenKey ? [latestOpenKey] : []);
-    }
-  };
-  const handleClick: MenuProps["onClick"] = (e) => {
+  useEffect(() => {
+    setCollapsed(isMobile);
+    const segments = location.pathname.split('/').filter(Boolean);
+    setCurrentSelection(segments.length >= 2 ? `/${segments[0]}/${segments[1]}` : location.pathname);
+    setOpenKeys(segments[0] ? [segments[0]] : []);
+  }, [isMobile, location.pathname]);
+
+  const menuData = menuItems(profile?.data, roleId as number);
+  const rootKeys = menuData.filter(item => item?.key).map(item => item!.key);
+
+  const onOpenChange = useCallback((keys: string[]) => {
+    const newKey = keys.find(key => !openKeys.includes(key));
+    setOpenKeys(!newKey || !rootKeys.includes(newKey) ? keys : [newKey]);
+  }, [openKeys, rootKeys]);
+
+  const handleMenuClick = useCallback((e: MenuInfo) => {
     setCurrentSelection(e.key);
-  };
+    if (isMobile) setCollapsed(true);
+  }, [isMobile]);
 
-  interface DataObject {
-    children?: DataObject[] | null;
-    icon: string;
-    key: string;
-    label: any;
-  }
-  function findObjectWithKey(
-    data: DataObject[],
-    path: {
-      pathname: string;
-      state?: string;
-    },
-    parentIndices: string[] = []
-  ): string[] | null {
-    for (let i = 0; i < data.length; i++) {
-      if (data[i] === null) {
-        continue;
-      }
-      const object = data[i];
-      if (object.key === path.pathname || object.key === path?.state) {
-        return [...parentIndices, object.key];
-      }
-      if (object.children && Array.isArray(object.children)) {
-        const childIndices = findObjectWithKey(object.children, path, [
-          ...parentIndices,
-          object.key,
-        ]);
-        if (childIndices) {
-          return childIndices;
-        }
-      }
-    }
-    return null;
-  }
-
-  useEffect(() => {
-    const indices = findObjectWithKey(
-      menuItems(profile?.data) as DataObject[],
-      {
-        pathname: location.pathname,
-        state: location.state,
-      }
-    );
-    if (indices) {
-      setOpenKeys(indices);
-      setCurrentSelection(indices[indices.length - 1]);
-    }
-  }, [location.pathname]);
-
-  //   for full screen
-  const handleFullscreenToggle = () => {
-    if (isFullscreen) {
-      exitFullscreen();
-    } else {
-      enterFullscreen();
-    }
-  };
-
-  const enterFullscreen = () => {
-    const element = document.documentElement;
-
-    if (element.requestFullscreen) {
-      element.requestFullscreen();
-    }
-    setIsFullscreen(true);
-  };
-
-  const exitFullscreen = () => {
-    if (document.exitFullscreen) {
-      document.exitFullscreen();
-    }
-    setIsFullscreen(false);
-  };
-  // const themeGlobal = useSelector(globalTheme);
-
-  // const handleDarkTheme = () => {
-  //   dispatch(setTheme(theme.darkAlgorithm));
-  // };
-  // const handleLightTheme = () => {
-  //   dispatch(setTheme(theme.defaultAlgorithm));
-  // };
-  const grid = useBreakpoint();
-  useEffect(() => {
-    if (grid.xs) {
-      setCollapsed(true);
-    } else {
-      setCollapsed(false);
-    }
-  }, [grid.xs]);
-  const content = (
-    <div>
-      <Link to="/setting/profile">
-        <Button
-          color="primary"
-          style={{ width: "100%" }}
-          icon={<UserOutlined />}
-        >
-          Profile
-        </Button>
-      </Link>
-      <br />
-      {/* <Link to="https://www.google.com/" target="_blank">
-        <Button
-          style={{ marginTop: "10px", width: "100%" }}
-          type="primary"
-          icon={<LogoutOutlined />}
-        >
-          Self Service
-        </Button>
-      </Link>
-      <br /> */}
-      <Link to="/login">
-        <Button
-          danger
-          style={{ marginTop: "10px", width: "100%" }}
-          type="primary"
-          icon={<LogoutOutlined />}
-          onClick={() => handleLogout()}
-        >
-          Logout
-        </Button>
-      </Link>
-    </div>
-  );
-  const selfService = (
-    <div>
-      <Link
-        to="https://www.youtube.com/playlist?list=PL1I5_y65vLeHbVZMV3EmR_hLkKms_AWTD"
-        target="_blank"
-      >
-        <Button style={{ marginTop: "10px", width: "100%" }} type="primary">
-          Video Tutorial
-        </Button>
-      </Link>
-      <br />
-      <Dropdown overlay={menu} trigger={["hover"]}>
-        <Button style={{ marginTop: "10px", width: "100%" }} type="primary">
-          User Guide
-        </Button>
-      </Dropdown>
-    </div>
-  );
-
-  const handleResizeStart = (e: any) => {
+  const handleResize = useCallback((e: React.MouseEvent) => {
     e.preventDefault();
-    const startX = e.clientX;
-
-    const handleResizeDrag = (e: any) => {
-      const newWidth = sidebarWidth + (e.clientX - startX);
-      setSidebarWidth(newWidth);
+    const startX = e.clientX, startWidth = sidebarWidth;
+    const onMove = (e: MouseEvent) => setSidebarWidth(Math.max(200, Math.min(400, startWidth + e.clientX - startX)));
+    const onEnd = () => {
+      document.removeEventListener("mousemove", onMove);
+      document.removeEventListener("mouseup", onEnd);
     };
+    document.addEventListener("mousemove", onMove);
+    document.addEventListener("mouseup", onEnd);
+  }, [sidebarWidth]);
 
-    const handleResizeEnd = () => {
-      document.removeEventListener("mousemove", handleResizeDrag);
-      document.removeEventListener("mouseup", handleResizeEnd);
-    };
+  const userMenu = (
+    <div style={{ minWidth: 200, padding: '8px 0' }}>
+      <div style={{ padding: '12px 16px', borderBottom: '1px solid #f0f0f0', marginBottom: 8 }}>
+        <Space direction="vertical" size={4}>
+          <Text strong>{profile?.data?.name || 'User'}</Text>
+          <Text type="secondary" style={{ fontSize: 12 }}>{profile?.data?.email}</Text>
+        </Space>
+      </div>
+      <Link to="/setting/profile" style={{ textDecoration: 'none' }}>
+        <Button type="text" icon={<UserOutlined />} block style={{ textAlign: 'left', justifyContent: 'flex-start' }}>Profile Settings</Button>
+      </Link>
+      <Button type="text" danger icon={<LogoutOutlined />} onClick={handleLogout} block
+        style={{ textAlign: 'left', justifyContent: 'flex-start', marginTop: 4 }}>Sign Out</Button>
+    </div>
+  );
 
-    document.addEventListener("mousemove", handleResizeDrag);
-    document.addEventListener("mouseup", handleResizeEnd);
-  };
-
-  useEffect(() => {
-    if (gridBreak.xs) {
-      setCollapsed(true);
-    } else {
-      setCollapsed(false);
-    }
-  }, [gridBreak.xs]);
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        width={sidebarWidth}
-        trigger={null}
-        collapsible
-        collapsed={collapsed}
-        breakpoint="lg"
-        style={{
-          overflow: "auto",
-          height: "100vh",
-          // background: colorBgContainer,
-          background: "#F8F8F8",
-          // width: "80%",
-          position: "sticky",
-          top: 0,
-          left: 0,
-          display: `${
-            grid.xs && !collapsed ? "block" : grid.md ? "block" : "none"
-          }`,
-        }}
-      >
-        <div>
-          {collapsed ? (
-            <div className="flex justify-center mt-2">
-              <Image
-                height={40}
-                preview={false}
-                src={logo}
-                alt="DBI Group Logo"
-              />
-            </div>
-          ) : (
-            <div className="flex justify-center">
-              <Image
-                height={120}
-                preview={false}
-                src={logo}
-                alt="DBI Group Logo"
-              />
-            </div>
-          )}
-          <div className="flex justify-center">
-            <Button
-              icon={<PlusOutlined />}
-              type="primary"
-              style={{ width: "80%", margin: "0 auto", borderRadius: "20px" }}
-            >
-              Create or Upload
-            </Button>
-          </div>
-        </div>
-        {/* {!collapsed && (
-          <div
-            style={{
-              backgroundColor: "#e6e6e6",
-              textAlign: "center",
-            }}
-          >
-            <Typography.Title level={4} style={{ padding: "10px 0" }}>
-              <Avatar src={userIcon} /> Hello {profile?.data?.name}
-            </Typography.Title>
-          </div>
-        )} */}
-        <div className="resize-handle" onMouseDown={handleResizeStart} />
-        <Menu
-          mode="inline"
-          items={menuItems(profile?.data, roleId as number)}
-          style={{ marginTop: "15px" }}
-          selectedKeys={[currentSelection]}
-          openKeys={openKeys}
-          defaultSelectedKeys={["/"]}
-          onOpenChange={onOpenChange}
-          onClick={handleClick}
-        />
-      </Sider>
-      <Layout>
-        <Header
-          style={{
-            padding: 0,
-            background: "linear-gradient(135deg, #F8F8F8, #F8F8F8)",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <Button
-              type="text"
-              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-              onClick={() => setCollapsed(!collapsed)}
-              style={{
-                fontSize: "16px",
-                width: 64,
-                height: 64,
-              }}
-            />
-            <div style={{ width: "350px" }}>
-              <Input
-                placeholder="Search"
-                width={"100%"}
-                size="large"
-                prefix={<SearchOutlined />}
-                style={{ borderRadius: "20px", background: "#fff" }}
-              />
-            </div>
-          </div>
+      {isMobile && !collapsed && <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.45)', zIndex: 999 }} onClick={() => setCollapsed(true)} />}
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              gap: 20,
-              padding: "10px",
-            }}
-          >
-            <Popover content={content}>
-              <Button
-                icon={<UserOutlined />}
-                type="dashed"
-                style={{
-                  marginRight: "20px",
-                }}
-              />
-            </Popover>
+      <Sider width={sidebarWidth} trigger={null} collapsible collapsed={collapsed} style={{
+        position: isMobile ? "fixed" : "sticky", top: 0, left: 0, height: "100vh", zIndex: isMobile ? 1000 : 100,
+        background: "#fff", borderRight: "1px solid #f0f0f0", boxShadow: isMobile ? "2px 0 8px rgba(0,0,0,0.15)" : "none",
+        transform: isMobile && collapsed ? "translateX(-100%)" : "translateX(0)", transition: "all 0.2s ease-out",
+      }}>
+        <div style={{ padding: collapsed ? "20px 8px" : "24px 16px", textAlign: "center", borderBottom: "1px solid #f0f0f0" }}>
+          {collapsed ? (
+            <Avatar size={40} src={logo} style={{ cursor: 'pointer' }} onClick={() => setCollapsed(false)} />
+          ) : (
+            <Image height={isTablet ? 100 : 140} preview={false} src={logo} style={{ borderRadius: 8, cursor: 'pointer' }} onClick={() => setCollapsed(true)} />
+          )}
+        </div>
+        <div style={{ height: 'calc(100vh - 120px)', overflowY: 'auto' }}>
+          <Menu mode="inline" items={menuData} selectedKeys={[currentSelection]} openKeys={openKeys}
+            onOpenChange={onOpenChange} onClick={handleMenuClick} inlineIndent={16}
+            style={{ border: 'none', background: 'transparent', fontSize: 14 }} />
+        </div>
+        {!isMobile && !collapsed && (
+          <div onMouseDown={handleResize} style={{
+            position: "absolute", top: 0, right: 0, width: 4, height: "100%", cursor: "col-resize", background: "transparent", zIndex: 10
+          }} onMouseEnter={e => e.currentTarget.style.background = colorPrimary}
+             onMouseLeave={e => e.currentTarget.style.background = "transparent"} />
+        )}
+      </Sider>
+
+      <Layout style={{ marginLeft: isMobile ? 0 : undefined }}>
+        <Header style={{
+          padding: isTablet ? "0 16px" : "0 24px", background: "#fff", borderBottom: "1px solid #f0f0f0",
+          display: "flex", alignItems: "center", height: 64, position: "sticky", top: 0, zIndex: 98,
+          boxShadow: "0 1px 4px rgba(0,21,41,0.08)"
+        }}>
+          <div style={{ flex: 1 }} />
+          <div style={{ flex: 2, display: "flex", justifyContent: "center" }}>
+            {!isTablet && (
+              <Input placeholder="Search anything..." prefix={<SearchOutlined style={{ color: '#bfbfbf' }} />}
+                style={{ width: screens.xl ? 400 : 300, borderRadius: 25, background: "#fafafa", border: "1px solid #e0e0e0", paddingLeft: 16, paddingRight: 16 }} allowClear />
+            )}
+          </div>
+          <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>
+            <Space size="middle">
+              {isTablet && <Button type="text" icon={<SearchOutlined />} size="large" />}
+              <Popover content={userMenu} trigger="click" placement="bottomRight">
+                <Button type="text" style={{ padding: "4px 8px", height: "auto", border: "1px solid #d9d9d9", borderRadius: 6 }}>
+                  <Space>
+                    <Avatar size={32} icon={<UserOutlined />} style={{ backgroundColor: colorPrimary }} />
+                    {!isTablet && <Text style={{ fontSize: 14 }}>{profile?.data?.name?.split(' ')[0] || 'User'}</Text>}
+                  </Space>
+                </Button>
+              </Popover>
+            </Space>
           </div>
         </Header>
 
-        <Content
-          style={{
-            background: "#fff",
-          }}
-        >
-          <Outlet />
+        <Content style={{ background: "#f5f5f5", minHeight: "calc(100vh - 128px)" }}>
+          <div style={{
+            padding: isTablet ? 16 : 24, background: "#fff", margin: isTablet ? 8 : 16,
+            borderRadius: 8, boxShadow: "0 1px 3px rgba(0,0,0,0.12)", minHeight: "calc(100vh - 200px)"
+          }}>
+            <Outlet />
+          </div>
         </Content>
 
-        <Footer
-          style={{
-            textAlign: "center",
-            padding: 8,
-            margin: 0,
-            fontSize: 13,
-            color: "#343a40",
-            background: "rgba(240, 242, 245, 1)",
-          }}
-        >
-          <strong>
-            Copyright © {new Date().getFullYear()} DBL Group. All Rights
-            Reserved.
-          </strong>
+        <Footer style={{
+          textAlign: "center", padding: isTablet ? "8px 16px" : "12px 24px",
+          fontSize: 12, color: "#8c8c8c", background: "#fff", borderTop: "1px solid #f0f0f0"
+        }}>
+          <Text type="secondary">© {new Date().getFullYear()} DBL Group. All rights reserved.</Text>
         </Footer>
       </Layout>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .ant-menu-item:hover, .ant-menu-submenu-title:hover { background-color: #f0f5ff !important; }
+        .ant-menu-item-selected { background-color: #e6f4ff !important; }
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d9d9d9; border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #bfbfbf; }
+        @media (max-width: 768px) {
+          .ant-layout-header { padding: 0 12px !important; }
+          .ant-layout-content > div { margin: 4px !important; padding: 12px !important; }
+        }
+      ` }} />
     </Layout>
   );
 };
