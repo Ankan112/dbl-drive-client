@@ -4,6 +4,7 @@ import { HTTPResponse } from "../../../app/types/commonTypes";
 import asyncWrapper from "../../../utils/asyncWrapper";
 import {
   ICreateFolder,
+  IFileAndFolderList,
   IFolderDetails,
   IFolderList,
 } from "../types/dashboardTypes";
@@ -35,6 +36,27 @@ export const dashboardEndpoints = api.injectEndpoints({
       }),
       providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
     }),
+    getFileAndFolderList: build.query<HTTPResponse<IFileAndFolderList[]>, void>(
+      {
+        query: () => ({
+          url: `/file/list`,
+        }),
+        providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+      }
+    ),
+    uploadFiles: build.mutation<HTTPResponse<void>, FormData>({
+      query: (body) => ({
+        url: "/file/upload-file",
+        method: "POST",
+        body: body,
+      }),
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        asyncWrapper(async () => {
+          message.success("Successfully files Uploaded!");
+        });
+      },
+      invalidatesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+    }),
   }),
 });
 
@@ -42,4 +64,6 @@ export const {
   useCreateFolderMutation,
   useGetFolderDetailsQuery,
   useGetFolderListQuery,
+  useGetFileAndFolderListQuery,
+  useUploadFilesMutation,
 } = dashboardEndpoints;

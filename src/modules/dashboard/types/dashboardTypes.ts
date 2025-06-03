@@ -1,5 +1,5 @@
 export interface ICreateFolder {
-  parent_id?: number;
+  parent_id?: number | null;
   name: string;
 }
 export interface IFolderList {
@@ -17,6 +17,7 @@ export interface IFolderDetails {
   parent_id: null | number;
   full_path: string;
   next_folder: NextFolder[];
+  files: Files[];
 }
 
 export interface NextFolder {
@@ -29,4 +30,29 @@ export interface NextFolder {
   created_at: string;
   updated_at: string;
   status: number;
+}
+export interface Files {
+  id: number;
+  name: string;
+  file_path: string;
+  folder_id: number;
+  user_id: number;
+  mime_type: string;
+  size: string;
+  created_at: string;
+  updated_at: string;
+  created_by: number;
+  updated_by: number;
+  status: number;
+}
+
+export interface IFileAndFolderList {
+  id: number;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  user_id: number;
+  type: string;
+  created_by_name: string;
+  sort_order: number;
 }

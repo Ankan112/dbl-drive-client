@@ -2,8 +2,18 @@ import { useDispatch, useSelector } from "react-redux";
 import { useGetMeQuery } from "../../../app/api/userApi";
 import { RootState } from "../../../app/store/store";
 
-import { useState } from "react";
-import { Button, Input, Dropdown, Menu, Checkbox, Progress, Modal } from "antd";
+import { useEffect, useState } from "react";
+import {
+  Button,
+  Input,
+  Dropdown,
+  Menu,
+  Checkbox,
+  Progress,
+  Modal,
+  Flex,
+  Popconfirm,
+} from "antd";
 import {
   SearchOutlined,
   MoreOutlined,
@@ -30,8 +40,13 @@ import {
 } from "@ant-design/icons";
 import { setCommonModal } from "../../../app/slice/modalSlice";
 import CreateFolder from "../component/CreateFolder";
-import { useGetFolderListQuery } from "../api/dashboardEndPoints";
-import { useNavigate } from "react-router";
+import {
+  useGetFileAndFolderListQuery,
+  useGetFolderListQuery,
+  useUploadFilesMutation,
+} from "../api/dashboardEndPoints";
+import { Outlet, useLocation, useNavigate } from "react-router";
+import { MenuProps } from "antd/lib";
 
 const FILES = [
   {
@@ -142,7 +157,9 @@ const ICONS = {
     </svg>
   ),
 };
-
+const handleClick = (key: string) => () => {
+  console.log(key);
+};
 const actionMenu = (
   <Menu className="w-48">
     {[
@@ -162,7 +179,7 @@ const actionMenu = (
         <Menu.Divider key={item.key} />
       ) : (
         <Menu.Item key={item.key} icon={item.icon} className={item.className}>
-          {item.text}
+          <div onClick={handleClick(item.key)}>{item.text}</div>
         </Menu.Item>
       )
     )}
@@ -260,7 +277,7 @@ const ActionButton = ({ show }: { show?: boolean }) => (
   </Dropdown>
 );
 
-const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
+export const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
   const [show, setShow] = useState(false);
   const navigate = useNavigate();
   const commonProps = {
@@ -271,6 +288,9 @@ const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
   if (viewMode === "list") {
     return (
       <div
+        onClick={() =>
+          file.type === "folder" ? navigate(`/folder/${file.id}`) : ""
+        }
         className={`grid grid-cols-12 gap-4 items-center px-6 py-2 hover:bg-gray-50 border-b border-gray-100 ${
           isSelected ? "bg-blue-50" : ""
         }`}
@@ -282,6 +302,8 @@ const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
           onChange={onSelect}
         />
         <div className="col-span-5 flex items-center gap-3 min-w-0">
+          <DeleteOutlined />
+
           <Icon type={file.type} isFolder={file.isFolder} />
           <div className="min-w-0 flex-1">
             <div className="text-sm text-gray-900 truncate hover:text-blue-600 cursor-pointer">
@@ -311,19 +333,34 @@ const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
 
   return (
     <div
+      onClick={() =>
+        file.type === "folder" ? navigate(`/folder/${file.id}`) : ""
+      }
       className={`relative p-3 rounded border hover:border-blue-300 hover:shadow-sm cursor-pointer ${
         isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200"
       }`}
-      onClick={() => navigate(`folder/${file.id}`)}
     >
-      <Checkbox
+      {/* <Checkbox
         className="absolute top-2 left-2"
         checked={isSelected}
         onChange={onSelect}
-      />
-      <div className="absolute top-2 right-2">
+      /> */}
+      {/* <div className="absolute top-2 right-2">
         <ActionButton />
-      </div>
+      </div> */}
+      <Flex justify="end" gap={6}>
+        <div>
+          <DownloadOutlined style={{ color: "blue" }} />
+        </div>
+        <div>
+          <Popconfirm
+            title="Are you sure you want to delete this file?"
+            onConfirm={() => {}}
+          >
+            <DeleteOutlined style={{ color: "red" }} />
+          </Popconfirm>
+        </div>
+      </Flex>
       <div className="flex flex-col items-center text-center mt-4">
         <div className="mb-2 scale-150">
           <Icon type={file.type} isFolder={file.isFolder} />
@@ -349,10 +386,12 @@ const DashboardCards = () => {
 
   const { data: profile } = useGetMeQuery();
   const dispatch = useDispatch();
-  const { data } = useGetFolderListQuery();
-
+  const location = useLocation();
+  const { data } = useGetFileAndFolderListQuery();
+  const [upload] = useUploadFilesMutation();
   const [viewMode, setViewMode] = useState<"grid" | "list">("grid");
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [parentId, setParentId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [uploadingFiles, setUploadingFiles] = useState<
     Array<{
@@ -363,6 +402,7 @@ const DashboardCards = () => {
       status: "uploading" | "completed" | "error";
     }>
   >([]);
+  console.log(uploadingFiles);
   const [showUploadModal, setShowUploadModal] = useState(false);
 
   const formatFileSize = (bytes: number): string => {
@@ -424,14 +464,27 @@ const DashboardCards = () => {
     input.type = "file";
     input.accept = accept;
     input.multiple = multiple;
+
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
-      if (files) {
+
+      if (files && files.length > 0) {
+        const formData = new FormData();
+        if (parentId) {
+          formData.append("folder_id", parentId.toString());
+        }
+        // Append each file individually
         Array.from(files).forEach((file) => {
-          simulateUpload(file);
+          formData.append("files", file); // Use "files[]" if backend expects array
+          simulateUpload(file); // Optional UI simulation
+        });
+
+        upload(formData).then((res) => {
+          console.log(res);
         });
       }
     };
+
     input.click();
   };
 
@@ -459,13 +512,19 @@ const DashboardCards = () => {
     setShowUploadModal(false);
   };
 
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setParentId(null);
+    }
+  }, [location.pathname]);
+
   const handleMenuClick = (key: string) => {
     switch (key) {
       case "folder":
         dispatch(
           setCommonModal({
             title: "New Folder",
-            content: <CreateFolder />,
+            content: <CreateFolder parentId={parentId} />,
             show: true,
             width: 420,
           })
@@ -529,7 +588,7 @@ const DashboardCards = () => {
     { mode: "list", Icon: UnorderedListOutlined },
     { mode: "grid", Icon: AppstoreOutlined },
   ];
-
+  console.log(filteredFiles);
   return (
     <div className="h-screen bg-white flex flex-col">
       {/* Header */}
@@ -627,25 +686,15 @@ const DashboardCards = () => {
           </div>
         )}
 
-        <div className={viewMode === "grid" ? "p-6" : ""}>
-          <div
-            className={
-              viewMode === "grid"
-                ? "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4"
-                : ""
-            }
-          >
-            {filteredFiles?.map((file) => (
-              <FileItem
-                key={file.id}
-                file={file}
-                viewMode={viewMode}
-                isSelected={selectedItems.includes(file.id)}
-                onSelect={() => handleSelectItem(file.id)}
-              />
-            ))}
-          </div>
-        </div>
+        <Outlet
+          context={{
+            searchTerm,
+            viewMode,
+            filteredFiles,
+            handleSelectItem,
+            setParentId,
+          }}
+        />
 
         {filteredFiles?.length === 0 && (
           <div className="flex flex-col items-center justify-center h-64 text-gray-500">
@@ -655,7 +704,7 @@ const DashboardCards = () => {
         )}
       </div>
 
-      {/* Footer */}
+      {/* Footer
       <div className="px-6 py-2 bg-gray-50 border-t border-gray-200 text-xs text-gray-600">
         {selectedItems.length > 0
           ? `${selectedItems.length} item${
@@ -664,7 +713,7 @@ const DashboardCards = () => {
           : `${filteredFiles?.length} item${
               filteredFiles?.length !== 1 ? "s" : ""
             }`}
-      </div>
+      </div> */}
 
       {/* Upload Progress Modal */}
       <Modal
@@ -756,6 +805,21 @@ const DashboardCards = () => {
               >
                 Clear all
               </Button>
+            </div>
+          </div>
+        )}
+        {uploadingFiles.length > 0 && (
+          <div className="mt-4 pt-3 border-t border-gray-200">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">
+                {uploadingFiles.filter((f) => f.status === "completed").length}{" "}
+                of {uploadingFiles.length} files uploaded
+              </span>
+              <Button
+                type="link"
+                onClick={clearAllUploads}
+                className="text-blue-600 p-0 h-auto"
+              ></Button>
             </div>
           </div>
         )}

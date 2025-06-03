@@ -6,13 +6,18 @@ import { setCommonModal } from "../../../app/slice/modalSlice";
 import { useCreateFolderMutation } from "../api/dashboardEndPoints";
 import { ICreateFolder } from "../types/dashboardTypes";
 
-const CreateFolder = () => {
+const CreateFolder = ({ parentId }: { parentId?: number | null }) => {
+  console.log({ parentId });
   const [form] = Form.useForm();
   const dispatch = useDispatch();
   const [create, { isSuccess, isLoading }] = useCreateFolderMutation();
 
   const onFinish = (data: ICreateFolder) => {
-    create(data);
+    const formattedData = { ...data };
+    if (parentId) {
+      formattedData.parent_id = parentId;
+    }
+    create(formattedData).unwrap();
   };
 
   useEffect(() => {
