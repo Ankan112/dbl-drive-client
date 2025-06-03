@@ -13,6 +13,7 @@ import Dashboard from "./modules/dashboard/Pages/Dashboard";
 
 import ProtectedRoute from "./utils/ProtectRoute";
 import RequireUser from "./utils/requireUser";
+import HomeDetails from "./modules/dashboard/component/HomeDetails";
 
 export const routers = createBrowserRouter([
   { path: "*", element: <NotFound /> },
@@ -54,6 +55,10 @@ export const routers = createBrowserRouter([
         path: "/",
         // element: <RequireUser children={<DashboardDemo />} />,
         element: <Dashboard />,
+      },
+      {
+        path: "/folder/*",
+        element: <HomeDetails />,
       },
       {
         path: "/setting/profile",

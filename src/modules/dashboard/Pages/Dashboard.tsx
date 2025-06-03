@@ -31,6 +31,7 @@ import {
 import { setCommonModal } from "../../../app/slice/modalSlice";
 import CreateFolder from "../component/CreateFolder";
 import { useGetFolderListQuery } from "../api/dashboardEndPoints";
+import { useNavigate } from "react-router";
 
 const FILES = [
   {
@@ -261,6 +262,7 @@ const ActionButton = ({ show }: { show?: boolean }) => (
 
 const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
   const [show, setShow] = useState(false);
+  const navigate = useNavigate();
   const commonProps = {
     onMouseEnter: () => setShow(true),
     onMouseLeave: () => setShow(false),
@@ -312,6 +314,7 @@ const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
       className={`relative p-3 rounded border hover:border-blue-300 hover:shadow-sm cursor-pointer ${
         isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200"
       }`}
+      onClick={() => navigate(`folder/${file.id}`)}
     >
       <Checkbox
         className="absolute top-2 left-2"
