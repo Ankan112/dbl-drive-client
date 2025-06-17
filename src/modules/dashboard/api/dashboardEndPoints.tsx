@@ -5,6 +5,7 @@ import asyncWrapper from "../../../utils/asyncWrapper";
 import {
   ICreateFolder,
   IFileAndFolderList,
+  IFileDetails,
   IFolderDetails,
   IFolderList,
 } from "../types/dashboardTypes";
@@ -36,6 +37,12 @@ export const dashboardEndpoints = api.injectEndpoints({
       }),
       providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
     }),
+    getFileDetails: build.query<HTTPResponse<IFileDetails>, number>({
+      query: (id) => ({
+        url: `/file/details/${id}`,
+      }),
+      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+    }),
     getFileAndFolderList: build.query<HTTPResponse<IFileAndFolderList[]>, void>(
       {
         query: () => ({
@@ -63,6 +70,8 @@ export const dashboardEndpoints = api.injectEndpoints({
 export const {
   useCreateFolderMutation,
   useGetFolderDetailsQuery,
+  useGetFileDetailsQuery,
+  useLazyGetFileDetailsQuery,
   useGetFolderListQuery,
   useGetFileAndFolderListQuery,
   useUploadFilesMutation,

@@ -45,6 +45,22 @@ export interface Files {
   updated_by: number;
   status: number;
 }
+export interface IFileDetails {
+  id: number;
+  file_name: string;
+  file_path: string;
+  folder_id: number;
+  user_id: number;
+  mime_type: string;
+  size: string;
+  file_created_at: string;
+  file_updated_at: string;
+  file_status: number;
+  created_by_name: string;
+  folder_name: string;
+  parent_folder_name: string;
+  parent_folder_id: number;
+}
 
 export interface IFileAndFolderList {
   id: number;

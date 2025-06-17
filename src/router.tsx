@@ -15,6 +15,8 @@ import ProtectedRoute from "./utils/ProtectRoute";
 import RequireUser from "./utils/requireUser";
 import HomeDetails from "./modules/dashboard/component/HomeDetails";
 import Home from "./modules/dashboard/component/Home";
+import MyFile from "./modules/myFile/page/MyFile";
+import RecycleBin from "./modules/recycleBin/page/RecycleBin";
 
 export const routers = createBrowserRouter([
   { path: "*", element: <NotFound /> },
@@ -67,6 +69,14 @@ export const routers = createBrowserRouter([
             element: <HomeDetails />,
           },
         ],
+      },
+      {
+        path: "/my-file",
+        element: <MyFile />,
+      },
+      {
+        path: "/recycle-bin",
+        element: <RecycleBin />,
       },
       {
         path: "/setting/profile",
