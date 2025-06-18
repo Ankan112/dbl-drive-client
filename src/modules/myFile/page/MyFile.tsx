@@ -189,11 +189,13 @@ import {
   useGetFileDetailsQuery,
   useLazyGetFileDetailsQuery,
 } from "../../dashboard/api/dashboardEndPoints";
+import { useNavigate } from "react-router";
+import FolderFileCard from "../../dashboard/component/FolderFileCard";
 
 const MyFile = () => {
   const [fileId, setFileId] = useState<number>(0);
   const [isPdfViewerOpen, setPdfViewerOpen] = useState(false);
-
+  const navigate = useNavigate();
   const { data } = useGetMyFileListQuery();
   // const { data: fileDetails } = useGetFileDetailsQuery(fileId, {
   //   skip: !fileId,
@@ -254,16 +256,16 @@ const MyFile = () => {
 
   const handleRecycleBin = () => {
     moveToRecycle(selectedItems);
-    console.log("Move to recycle bin:", selectedItems);
   };
-  const handleCardClick = async (item: IMyFileList) => {
-    if (item.type === "folder") {
+  const handleCardClick = async (type: string, id: number) => {
+    if (type === "folder") {
       message.warning("Folder found!");
+      navigate(`/folder/${id}`);
       return;
     }
 
     try {
-      const res = await fetchFileDetails(item.id); // Fetch file details manually
+      const res = await fetchFileDetails(id); // Fetch file details manually
       const filePath = res?.data?.data?.file_path;
       const fileName = res?.data?.data?.file_name;
 
@@ -276,9 +278,13 @@ const MyFile = () => {
 
       if (extension === "pdf") {
         // Open in new tab
+        message.warning("pdf found!");
+
         window.open(filePath, "_blank");
       } else {
         // Trigger download
+        message.warning("other file found!");
+
         const link = document.createElement("a");
         link.href = filePath;
         link.download = fileName || "download";
@@ -374,35 +380,47 @@ const MyFile = () => {
                 : selectedItems.folderIds.includes(item.id);
 
             return (
-              <Card
-                key={item.id}
-                hoverable
-                className="relative shadow-md rounded-lg text-center p-2 cursor-pointer"
-                style={{ padding: "12px" }}
-                onClick={() => handleCardClick(item)}
-              >
-                <div
-                  className="absolute top-2 right-2 z-10"
-                  onClick={(e) => e.stopPropagation()} // prevent card click
-                >
-                  <Checkbox
-                    checked={isChecked}
-                    onChange={(e) =>
-                      handleCheckboxChange(item.id, item.type, e.target.checked)
-                    }
-                  />
-                </div>
+              // <Card
+              //   key={item.id}
+              //   hoverable
+              //   className="relative shadow-md rounded-lg text-center p-2 cursor-pointer"
+              //   style={{ padding: "12px" }}
+              //   onClick={() => handleCardClick(item)}
+              // >
+              //   <div
+              //     className="absolute top-2 right-2 z-10"
+              //     onClick={(e) => e.stopPropagation()} // prevent card click
+              //   >
+              //     <Checkbox
+              //       checked={isChecked}
+              //       onChange={(e) =>
+              //         handleCheckboxChange(item.id, item.type, e.target.checked)
+              //       }
+              //     />
+              //   </div>
 
-                <Space direction="vertical" size={4} align="center">
-                  <Tag
-                    color={item.type === "file" ? "blue" : "green"}
-                    style={{ textTransform: "capitalize" }}
-                  >
-                    {item.type}
-                  </Tag>
-                  <Typography.Text strong>{item.name}</Typography.Text>
-                </Space>
-              </Card>
+              //   <Space direction="vertical" size={4} align="center">
+              //     <Tag
+              //       color={item.type === "file" ? "blue" : "green"}
+              //       style={{ textTransform: "capitalize" }}
+              //     >
+              //       {item.type}
+              //     </Tag>
+              //     <Typography.Text strong>{item.name}</Typography.Text>
+              //   </Space>
+              // </Card>
+              <FolderFileCard
+                key={item.id}
+                id={item.id}
+                name={item.name}
+                type={item.type}
+                createdBy={item.created_by_name}
+                createdAt={item.created_at}
+                isSelected={isChecked}
+                showCheckbox={true}
+                onCheckboxChange={handleCheckboxChange}
+                onClick={handleCardClick}
+              />
             );
           })}
         </div>

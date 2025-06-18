@@ -5,7 +5,16 @@ import {
   useParams,
 } from "react-router";
 import { useGetFolderDetailsQuery } from "../api/dashboardEndPoints";
-import { Breadcrumb, Card, Col, Empty, Row, Typography } from "antd";
+import {
+  Breadcrumb,
+  Card,
+  Col,
+  Empty,
+  Row,
+  Space,
+  Tag,
+  Typography,
+} from "antd";
 import { FileItem } from "../Pages/Dashboard";
 import { Files, NextFolder } from "../types/dashboardTypes";
 import { HomeOutlined } from "@ant-design/icons";
@@ -70,13 +79,40 @@ const HomeDetails = () => {
           }
         >
           {data?.data?.next_folder?.map((file: NextFolder) => (
-            <FileItem
+            // <FileItem
+            //   key={file.id}
+            //   file={file}
+            //   viewMode={viewMode}
+
+            //   //   isSelected={selectedItems.includes(file.id)}
+            //   onSelect={() => handleSelectItem(file.id)}
+            // />
+            <Card
               key={file.id}
-              file={file}
-              viewMode={viewMode}
-              //   isSelected={selectedItems.includes(file.id)}
-              onSelect={() => handleSelectItem(file.id)}
-            />
+              hoverable
+              className="relative shadow-md rounded-lg text-center p-2 cursor-pointer"
+              style={{ padding: "12px" }}
+              onClick={() => navigate(`/folder/${file.id}`)}
+            >
+              {/* <div
+                className="absolute top-2 right-2 z-10"
+                onClick={(e) => e.stopPropagation()} // prevent card click
+              >
+                <Checkbox
+                  checked={isChecked}
+                  onChange={(e) =>
+                    handleCheckboxChange(file.id, file.type, e.target.checked)
+                  }
+                />
+              </div> */}
+
+              <Space direction="vertical" size={4} align="center">
+                <Tag color={"green"} style={{ textTransform: "capitalize" }}>
+                  Folder
+                </Tag>
+                <Typography.Text strong>{file.name}</Typography.Text>
+              </Space>
+            </Card>
           ))}
           {data?.data?.files?.map((file: Files) => (
             <FileItem
