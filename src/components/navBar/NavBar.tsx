@@ -16,7 +16,7 @@ import { setLogout } from "../../app/features/userSlice";
 import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
 import { useState } from "react";
 import { useGetMeQuery } from "../../app/api/userApi";
-import { imageURL } from "../../app/slice/baseQuery";
+import { DownloadURL } from "../../app/slice/baseQuery";
 // import useIsMobile from '../utils/useIsMobile';
 // import Notifications from '../Notification/Notification';
 // import MUSAFIR from './../../assets/musafir_travel.png';
@@ -77,7 +77,7 @@ const NavBar = () => {
         <p>{profile?.data?.name}</p>
         <Image
           style={{ width: "60px", marginBottom: "10px" }}
-          src={`${imageURL + "user_files/" + profile?.data?.image}`}
+          src={`${DownloadURL + "user_files/" + profile?.data?.image}`}
         />
       </div>
       <Link to="/setting/profile">

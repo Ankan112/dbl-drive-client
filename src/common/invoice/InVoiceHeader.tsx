@@ -1,5 +1,4 @@
 import { Col, Row, Typography } from "antd";
-import { imageURL } from "../../app/slice/baseQuery";
 import logo from "../../assets/invoice-logo.png";
 import { useGetMeQuery } from "../../app/api/userApi";
 import { IUser } from "../../auth/types/loginTypes";

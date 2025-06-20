@@ -1,5 +1,5 @@
 import { Col, QRCode, Row, Typography } from "antd";
-import { imageURL } from "../../app/slice/baseQuery";
+import { DownloadURL } from "../../app/slice/baseQuery";
 
 import { useGetMeQuery } from "../../app/api/userApi";
 import { IUser } from "../../auth/types/loginTypes";
@@ -20,7 +20,7 @@ export const PrintHeader = () => {
       >
         <Col style={{ display: "flex", alignItems: "center", maxWidth: "40%" }}>
           <img
-            src={imageURL + ProfileInfo?.image}
+            src={DownloadURL + ProfileInfo?.image}
             width={200}
             height={100}
             style={{ objectFit: "contain" }}
