@@ -340,14 +340,14 @@ export const FileItem = ({ file, isSelected, onSelect, viewMode }: any) => {
         isSelected ? "border-blue-500 bg-blue-50" : "border-gray-200"
       }`}
     >
-      {/* <Checkbox
+      <Checkbox
         className="absolute top-2 left-2"
         checked={isSelected}
         onChange={onSelect}
-      /> */}
-      {/* <div className="absolute top-2 right-2">
+      />
+      <div className="absolute top-2 right-2">
         <ActionButton />
-      </div> */}
+      </div>
       <Flex justify="end" gap={6}>
         <div>
           <DownloadOutlined style={{ color: "blue" }} />
@@ -609,12 +609,12 @@ const DashboardCards = () => {
                 Upload
               </Button>
             </Dropdown>
-            {/* <Button
+            <Button
               icon={<FolderAddOutlined />}
               className="h-8 rounded-sm border-gray-300"
             >
               New folder
-            </Button> */}
+            </Button>
           </div>
         </div>
         <Input
@@ -791,23 +791,7 @@ const DashboardCards = () => {
             </div>
           ))}
         </div>
-        {uploadingFiles.length > 0 && (
-          <div className="mt-4 pt-3 border-t border-gray-200">
-            <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">
-                {uploadingFiles.filter((f) => f.status === "completed").length}{" "}
-                of {uploadingFiles.length} files uploaded
-              </span>
-              <Button
-                type="link"
-                onClick={clearAllUploads}
-                className="text-blue-600 p-0 h-auto"
-              >
-                Clear all
-              </Button>
-            </div>
-          </div>
-        )}
+        
         {uploadingFiles.length > 0 && (
           <div className="mt-4 pt-3 border-t border-gray-200">
             <div className="flex items-center justify-between text-sm">

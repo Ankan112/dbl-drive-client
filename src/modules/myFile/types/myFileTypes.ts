@@ -5,6 +5,7 @@ export interface IMyFileList {
   updated_at: string;
   user_id: number;
   type: string;
+  size:string;
   created_by_name: string;
   sort_order: number;
 }

@@ -49,6 +49,7 @@ export interface IFileDetails {
   id: number;
   file_name: string;
   file_path: string;
+  path_name: string;
   folder_id: number;
   user_id: number;
   mime_type: string;

@@ -10,9 +10,8 @@ import { RootState } from "../store/store";
 const baseURL = "http://localhost:3003/api/v1";
 
 export const socket_url = "https://test.socket.com";
-export const imageURLNew = "http://localhost:3003"; //! avoid / end of the line otherwise image and pdf won't work!
-export const imageURL =
-  "https://m360ict-ecommerce.s3.ap-south-1.amazonaws.com/amcham-storage/";
+export const DownloadURL = "http://localhost:3003"; //! avoid / end of the line otherwise image and pdf won't work!
+
 export const baseQuery = fetchBaseQuery({
   baseUrl: baseURL,
   credentials: "include",
