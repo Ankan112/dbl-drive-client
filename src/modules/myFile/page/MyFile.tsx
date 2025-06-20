@@ -1,34 +1,18 @@
-
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import {
-  Button,
-  Card,
-  Checkbox,
-  Drawer,
-  Input,
-  message,
-  Space,
-  Tag,
-  Tooltip,
-  Typography,
-} from "antd";
-import { useGetMyFileListQuery } from "../api/myFileEndpoint";
-import { useMoveToRecycleBinMutation } from "../../recycleBin/api/recycleBinEndpoint";
-import { useState, useEffect } from "react";
-import { IMyFileList } from "../types/myFileTypes";
-import {
-  useGetFileDetailsQuery,
-  useLazyGetFileDetailsQuery,
-} from "../../dashboard/api/dashboardEndPoints";
+import { Button, Checkbox, Input, message, Tooltip, Typography } from "antd";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
-import FolderFileCard from "../../dashboard/component/FolderFileCard";
 import { DownloadURL } from "../../../app/slice/baseQuery";
+import { useLazyGetFileDetailsQuery } from "../../dashboard/api/dashboardEndPoints";
+import FolderFileCard from "../../dashboard/component/FolderFileCard";
+import { useMoveToRecycleBinMutation } from "../../recycleBin/api/recycleBinEndpoint";
+import { useGetMyFileListQuery } from "../api/myFileEndpoint";
+import { IMyFileList } from "../types/myFileTypes";
+import CommonHeader from "../../dashboard/component/CommonHeader";
 const MyFile = () => {
-  const [fileId, setFileId] = useState<number>(0);
-  const [isPdfViewerOpen, setPdfViewerOpen] = useState(false);
   const navigate = useNavigate();
   const { data } = useGetMyFileListQuery();
-  
+  const [parentId, setParentId] = useState<number | null>(null);
   const [fetchFileDetails] = useLazyGetFileDetailsQuery();
 
   const [moveToRecycle] = useMoveToRecycleBinMutation();
@@ -40,8 +24,13 @@ const MyFile = () => {
     fileIds: [],
     folderIds: [],
   });
-
   const [selectAll, setSelectAll] = useState(false);
+
+  useEffect(() => {
+    if (location.pathname === "/") {
+      setParentId(null);
+    }
+  }, [location.pathname]);
 
   const handleCheckboxChange = (id: number, type: string, checked: boolean) => {
     setSelectedItems((prev) => {
@@ -88,8 +77,7 @@ const MyFile = () => {
   };
   const handleCardClick = async (type: string, id: number) => {
     if (type === "folder") {
-      message.warning("Folder found!");
-      navigate(`/folder/${id}`);
+      navigate(`/my-file/${id}`);
       return;
     }
 
@@ -113,7 +101,6 @@ const MyFile = () => {
         window.open(filePath, "_blank");
       } else {
         // Trigger download
-        message.warning("other file found!");
 
         const link = document.createElement("a");
         link.href = filePath;
@@ -128,20 +115,10 @@ const MyFile = () => {
     }
   };
 
-  
   return (
-    <div className="h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
-        <Typography.Title level={4} className="!mb-0">
-          My Files
-        </Typography.Title>
-        <Input
-          className="w-64 rounded-sm border-gray-300"
-          prefix={<SearchOutlined className="text-gray-400" />}
-          placeholder="Search File"
-        />
-      </div>
+      <CommonHeader title="My Files" parentId={Number(parentId)} />
 
       {/* Actions */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
@@ -169,7 +146,7 @@ const MyFile = () => {
       </div>
 
       {/* Cards */}
-      <div className="p-6">
+      <div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
           {data?.data?.map((item: IMyFileList) => {
             const isChecked =
@@ -178,7 +155,6 @@ const MyFile = () => {
                 : selectedItems.folderIds.includes(item.id);
 
             return (
-
               <FolderFileCard
                 key={item.id}
                 id={item.id}

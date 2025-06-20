@@ -338,14 +338,14 @@ const FolderFileCard: React.FC<FileCardProps> = ({
 
   return (
     <div
-      className={`relative group transition-all duration-100 rounded-lg shadow-md p-2 ${isSelected ? "bg-blue-50" : "bg-white hover:bg-gray-50"
-        }`}
-      style={{ width: 130 }}
+      className={`relative group transition-all duration-100 rounded-lg shadow-md p-2 ${
+        isSelected ? "bg-blue-50" : "bg-white hover:bg-gray-50"
+      }`}
       onClick={() => onClick?.(type, id)}
     >
       {/* Checkbox for selection */}
       {showCheckbox && (
-        <div className="absolute top-1 right-1 z-10">
+        <div onClick={(e) => e.stopPropagation()}>
           <Checkbox
             checked={isSelected}
             onChange={(e) => {

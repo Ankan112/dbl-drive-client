@@ -258,32 +258,16 @@ const RecycleBin = () => {
     }
   };
 
-  useEffect(() => {
-    const totalItems = filteredData?.length || 0;
-    const selectedCount =
-      selectedItems.fileIds.length + selectedItems.folderIds.length;
-    setSelectAll(selectedCount > 0 && selectedCount === totalItems);
-  }, [selectedItems, filteredData]);
-
-  const selectedCount =
-    selectedItems.fileIds.length + selectedItems.folderIds.length;
-
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white shadow-sm">
-        <div className="flex items-center space-x-4">
-          <Typography.Title level={3} className="!mb-0 text-gray-800">
-            Recycle Bin
-          </Typography.Title>
-          {data?.data?.length ? (
-            <Typography.Text className="text-gray-500">
-              {filteredData?.length || 0} of {data.data.length} items
-            </Typography.Text>
-          ) : null}
-        </div>
+      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
+        <Typography.Title level={4} className="!mb-0">
+          Recycle Bin
+        </Typography.Title>
+
         <Input
-          className="w-80 rounded-lg border-gray-300 shadow-sm"
+          className="w-64 rounded-sm border-gray-300"
           prefix={<SearchOutlined className="text-gray-400" />}
           placeholder="Search files and folders..."
           value={searchTerm}
@@ -293,7 +277,7 @@ const RecycleBin = () => {
       </div>
 
       {/* Actions Bar */}
-      <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200 shadow-sm">
+      <div className="flex items-center justify-between px-6 py-4 ">
         <div className="flex items-center space-x-4">
           <Checkbox
             checked={selectAll}
@@ -302,11 +286,6 @@ const RecycleBin = () => {
           >
             Select All
           </Checkbox>
-          {selectedCount > 0 && (
-            <Typography.Text className="text-sm text-gray-600">
-              {selectedCount} item{selectedCount > 1 ? "s" : ""} selected
-            </Typography.Text>
-          )}
         </div>
 
         <div className="flex gap-3">
@@ -315,10 +294,13 @@ const RecycleBin = () => {
               icon={<RollbackOutlined />}
               type="default"
               onClick={handleRestore}
-              disabled={selectedCount === 0}
+              disabled={
+                selectedItems.fileIds.length === 0 &&
+                selectedItems.folderIds.length === 0
+              }
               className="rounded-lg"
             >
-              Restore ({selectedCount})
+              Restore
             </Button>
           </Tooltip>
           <Tooltip title="Permanently delete selected items">
@@ -327,55 +309,42 @@ const RecycleBin = () => {
               type="primary"
               danger
               onClick={handlePermanentDelete}
-              disabled={selectedCount === 0}
+              disabled={
+                selectedItems.fileIds.length === 0 &&
+                selectedItems.folderIds.length === 0
+              }
               className="rounded-lg"
             >
-              Delete Permanently ({selectedCount})
+              Delete Permanently
             </Button>
           </Tooltip>
         </div>
       </div>
 
       {/* Content Area */}
-      <div className="flex-1 p-6">
-        {isLoading ? (
-          <div className="flex justify-center items-center h-64">
-            <Typography.Text>Loading...</Typography.Text>
-          </div>
-        ) : !filteredData?.length ? (
-          <div className="flex justify-center items-center h-64">
-            <Empty
-              description={
-                searchTerm
-                  ? `No items found matching "${searchTerm}"`
-                  : "Recycle bin is empty"
-              }
-            />
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-6">
-            {filteredData.map((item: IRecycleBinList) => {
-              const isSelected =
-                item.type === "file"
-                  ? selectedItems.fileIds.includes(item.id)
-                  : selectedItems.folderIds.includes(item.id);
+      <div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
+          {filteredData?.map((item: IRecycleBinList) => {
+            const isSelected =
+              item.type === "file"
+                ? selectedItems.fileIds.includes(item.id)
+                : selectedItems.folderIds.includes(item.id);
 
-              return (
-                <FolderFileCard
-                  key={item.id}
-                  id={item.id}
-                  name={item.name}
-                  type={item.type}
-                  createdBy={item.created_by_name}
-                  createdAt={item.created_at}
-                  isSelected={isSelected}
-                  showCheckbox={true}
-                  onCheckboxChange={handleCheckboxChange}
-                />
-              );
-            })}
-          </div>
-        )}
+            return (
+              <FolderFileCard
+                key={item.id}
+                id={item.id}
+                name={item.name}
+                type={item.type}
+                createdBy={item.created_by_name}
+                createdAt={item.created_at}
+                isSelected={isSelected}
+                showCheckbox={true}
+                onCheckboxChange={handleCheckboxChange}
+              />
+            );
+          })}
+        </div>
       </div>
     </div>
   );

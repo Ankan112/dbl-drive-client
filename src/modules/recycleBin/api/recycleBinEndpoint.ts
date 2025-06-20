@@ -20,6 +20,7 @@ export const recycleBinEndpoint = api.injectEndpoints({
       invalidatesTags: () => [
         { type: "recycleBinList", id: "recycle" },
         { type: "myFileTypes", id: "myFile" },
+        { type: "dashboardTypes", id: "dashboard" },
       ],
     }),
     restoreFile: build.mutation<HTTPResponse<void>, IRecycleBin>({
@@ -36,6 +37,7 @@ export const recycleBinEndpoint = api.injectEndpoints({
       invalidatesTags: () => [
         { type: "recycleBinList", id: "recycle" },
         { type: "myFileTypes", id: "myFile" },
+        { type: "dashboardTypes", id: "dashboard" },
       ],
     }),
     permanentDeleteFile: build.mutation<HTTPResponse<void>, IRecycleBin>({
