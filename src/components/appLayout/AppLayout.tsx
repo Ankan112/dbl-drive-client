@@ -3,6 +3,8 @@ import {
   LogoutOutlined,
   SearchOutlined,
   UserOutlined,
+  MenuOutlined,
+  CloseOutlined,
 } from "@ant-design/icons";
 import {
   Button,
@@ -73,6 +75,18 @@ export const AppLayout: React.FC = () => {
     );
     setOpenKeys(segments[0] ? [segments[0]] : []);
   }, [isMobile, location.pathname]);
+
+  // Prevent body scroll when sidebar is open on mobile
+  useEffect(() => {
+    if (isMobile && !collapsed) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, collapsed]);
 
   const menuData = menuItems(profile?.data, roleId as number);
   const rootKeys = menuData
@@ -259,7 +273,7 @@ export const AppLayout: React.FC = () => {
         )}
       </Sider>
 
-      <Layout style={{ marginLeft: isMobile ? 0 : undefined }}>
+      <Layout>
         <Header
           style={{
             padding: isTablet ? "0 16px" : "0 24px",
@@ -274,6 +288,14 @@ export const AppLayout: React.FC = () => {
             boxShadow: "0 1px 4px rgba(0,21,41,0.08)",
           }}
         >
+          {isMobile && (
+            <Button
+              type="text"
+              icon={collapsed ? <MenuOutlined /> : <CloseOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ marginRight: 8 }}
+            />
+          )}
           <div style={{ flex: 1 }} />
           <div style={{ flex: 2, display: "flex", justifyContent: "center" }}>
             {!isTablet && (
@@ -330,7 +352,11 @@ export const AppLayout: React.FC = () => {
         </Header>
 
         <Content
-          style={{ background: "#f5f5f5", minHeight: "calc(100vh - 128px)" }}
+          style={{
+            background: "#f5f5f5",
+            minHeight: "calc(100vh - 128px)",
+            overflowX: "hidden",
+          }}
         >
           <div
             style={{
@@ -374,6 +400,11 @@ export const AppLayout: React.FC = () => {
         @media (max-width: 768px) {
           .ant-layout-header { padding: 0 12px !important; }
           .ant-layout-content > div { margin: 4px !important; padding: 12px !important; }
+          body { overflow-x: hidden !important; }
+        }
+        @media (max-width: 480px) {
+          .ant-layout-header { padding: 0 8px !important; }
+          .ant-layout-content > div { margin: 2px !important; padding: 8px !important; }
         }
       `,
         }}
