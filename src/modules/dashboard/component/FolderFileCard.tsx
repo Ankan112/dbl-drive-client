@@ -1,5 +1,5 @@
 import React from "react";
-import { Checkbox, Typography, Tooltip } from "antd";
+import { Checkbox, Typography, Tooltip, Flex, Dropdown } from "antd";
 import {
   FolderOutlined,
   FilePdfOutlined,
@@ -25,6 +25,8 @@ import {
   PictureOutlined,
   FileAddOutlined,
 } from "@ant-design/icons";
+import { BsThreeDotsVertical } from "react-icons/bs";
+import { MenuProps } from "antd/lib";
 
 interface FileCardProps {
   id: number;
@@ -38,6 +40,7 @@ interface FileCardProps {
   syncStatus?: "online" | "offline" | "syncing" | "error" | "shared" | "locked";
   onCheckboxChange?: (id: number, type: string, checked: boolean) => void;
   onClick?: (type: string, id: number) => void;
+  handleDownload?: () => void;
 }
 
 const FolderFileCard: React.FC<FileCardProps> = ({
@@ -52,6 +55,7 @@ const FolderFileCard: React.FC<FileCardProps> = ({
   syncStatus,
   onCheckboxChange,
   onClick,
+  handleDownload,
 }) => {
   // Comprehensive file extension to icon and color mapping
   const getFileIcon = (fileName: string, fileType: string) => {
@@ -336,6 +340,26 @@ const FolderFileCard: React.FC<FileCardProps> = ({
     return nameWithoutExtension.slice(0, availableLength) + "..." + extension;
   };
 
+  const items: MenuProps["items"] = [
+    {
+      key: "1",
+      label: <small onClick={() => onClick?.(type, id)}>Open</small>,
+    },
+    {
+      key: "2",
+      label: <small onClick={handleDownload}>Download</small>,
+    },
+    {
+      key: "3",
+      label: <small>Rename</small>,
+    },
+    {
+      key: "4",
+      label: <small>Delete</small>,
+      danger: true,
+    },
+  ];
+
   return (
     <div
       className={`relative group transition-all duration-100 rounded-lg shadow-md p-2 ${
@@ -344,20 +368,28 @@ const FolderFileCard: React.FC<FileCardProps> = ({
       onClick={() => onClick?.(type, id)}
     >
       {/* Checkbox for selection */}
-      {showCheckbox && (
-        <div onClick={(e) => e.stopPropagation()}>
-          <Checkbox
-            checked={isSelected}
-            onChange={(e) => {
-              e.stopPropagation();
-              onCheckboxChange?.(id, type, e.target.checked);
-            }}
-            className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
-            style={{ opacity: isSelected ? 1 : undefined }}
-          />
+      <Flex justify="space-between" align="center">
+        <div>
+          {showCheckbox && (
+            <div onClick={(e) => e.stopPropagation()}>
+              <Checkbox
+                checked={isSelected}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  onCheckboxChange?.(id, type, e.target.checked);
+                }}
+                className="opacity-0 group-hover:opacity-100 transition-opacity duration-100"
+                style={{ opacity: isSelected ? 1 : undefined }}
+              />
+            </div>
+          )}
         </div>
-      )}
-
+        <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+          <Dropdown trigger={["click"]} menu={{ items }}>
+            <BsThreeDotsVertical className="opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
+          </Dropdown>
+        </div>
+      </Flex>
       <div className="flex flex-col items-center text-center space-y-1">
         {/* File/Folder Icon with Sync Status */}
         <div className="relative mb-1">

@@ -66,6 +66,11 @@ const Home = () => {
       message.error("Failed to load file.");
     }
   };
+
+  const handleDownload = () => {
+    alert("Download");
+  };
+
   return (
     <div className="h-screen bg-white flex flex-col">
       {/* Header */}
@@ -85,6 +90,7 @@ const Home = () => {
             showCheckbox={false}
             // onCheckboxChange={handleCheckboxChange}
             onClick={handleCardClick}
+            handleDownload={handleDownload}
           />
         ))}
       </div>

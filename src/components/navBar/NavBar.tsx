@@ -17,9 +17,6 @@ import { BsFillMoonStarsFill, BsFillSunFill } from "react-icons/bs";
 import { useState } from "react";
 import { useGetMeQuery } from "../../app/api/userApi";
 import { DownloadURL } from "../../app/slice/baseQuery";
-// import useIsMobile from '../utils/useIsMobile';
-// import Notifications from '../Notification/Notification';
-// import MUSAFIR from './../../assets/musafir_travel.png';
 
 const NavBar = () => {
   // const isMobile = useIsMobile();

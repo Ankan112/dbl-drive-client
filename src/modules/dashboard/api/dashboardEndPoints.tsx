@@ -23,7 +23,10 @@ export const dashboardEndpoints = api.injectEndpoints({
           message.success("Successfully Folder Created!");
         });
       },
-      invalidatesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+      invalidatesTags: () => [
+        { type: "dashboardTypes", id: "dashboard" },
+        { type: "myFileTypes", id: "myFile" },
+      ],
     }),
     getFolderList: build.query<HTTPResponse<IFolderList[]>, void>({
       query: () => ({
@@ -57,12 +60,16 @@ export const dashboardEndpoints = api.injectEndpoints({
         method: "POST",
         body: body,
       }),
-      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
-        asyncWrapper(async () => {
-          message.success("Successfully files Uploaded!");
-        });
-      },
-      invalidatesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+      // onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+      //   asyncWrapper(async () => {
+      //     await queryFulfilled;
+      //     message.success("Successfully files Uploaded!");
+      //   });
+      // },
+      invalidatesTags: () => [
+        { type: "dashboardTypes", id: "dashboard" },
+        { type: "myFileTypes", id: "myFile" },
+      ],
     }),
   }),
 });

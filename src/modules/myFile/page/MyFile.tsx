@@ -114,7 +114,9 @@ const MyFile = () => {
       message.error("Failed to load file.");
     }
   };
-
+  const handleDownload = () => {
+    alert("Download");
+  };
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -167,6 +169,7 @@ const MyFile = () => {
                 showCheckbox={true}
                 onCheckboxChange={handleCheckboxChange}
                 onClick={handleCardClick}
+                handleDownload={handleDownload}
               />
             );
           })}
