@@ -87,12 +87,15 @@ const MyFileDetails = () => {
     navigate(`/my-file/${id}`);
     return;
   };
-  const handleFileCardClick = async (type: string = "file", id: number) => {
+  const handleFileCardClick = async (type: string, id: number) => {
+    if (type === "folder") {
+      navigate(`/my-file/${id}`);
+      return;
+    }
+
     try {
       const res = await fetchFileDetails(id); // Fetch file details manually
       const filePath = `${DownloadURL}/media/${res?.data?.data?.path_name}`;
-
-      const fileName = res?.data?.data?.file_name;
 
       if (!filePath) {
         message.error("File path not found!");
@@ -101,26 +104,64 @@ const MyFileDetails = () => {
 
       const extension = filePath.split(".").pop()?.toLowerCase();
 
-      if (extension === "pdf") {
-        // Open in new tab
-        message.warning("pdf found!");
+      // List of extensions that should open in Google Docs
+      const googleDocsExtensions = [
+        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'
+      ];
 
-        window.open(filePath, "_blank");
-      } else {
-        // Trigger download
+      let urlToOpen = filePath;
 
-        const link = document.createElement("a");
-        link.href = filePath;
-        link.download = fileName || "download";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+      if (googleDocsExtensions.includes(extension || '')) {
+        // Convert file URL to Google Docs viewer URL
+        urlToOpen = `https://docs.google.com/viewer?url=${encodeURIComponent(filePath)}`;
       }
+
+      // Open all files in new tab
+      window.open(urlToOpen, "_blank");
+
     } catch (error) {
       console.error("Failed to load file:", error);
       message.error("Failed to load file.");
     }
   };
+
+  const handleFileDownload = async (type: string, id: number) => {
+    if (type === "folder") {
+      navigate(`/my-file/${id}`);
+      return;
+    }
+
+    try {
+      const res = await fetchFileDetails(id); // Fetch file details manually
+      const filePath = `${DownloadURL}/media/${res?.data?.data?.path_name}`;
+
+      if (!filePath) {
+        message.error("File path not found!");
+        return;
+      }
+
+      // Fetch the file as a Blob
+      const response = await fetch(filePath);
+      const blob = await response.blob();
+      const extension = filePath.split(".").pop()?.toLowerCase();
+
+      // Create a download link
+      const link = document.createElement('a');
+      const fileName = filePath.split('/').pop() || 'file';
+      link.href = URL.createObjectURL(blob);
+      link.download = fileName;
+
+      // Force download for all file types, even PDFs, videos, etc.
+      link.click();
+
+      // Clean up the object URL after download
+      URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Failed to load file:", error);
+      message.error("Failed to load file.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
@@ -157,7 +198,7 @@ const MyFileDetails = () => {
           {/* 🏠 Home Icon */}
           <Breadcrumb.Item
             onClick={() => navigate("/my-file")}
-            // style={{ cursor: "pointer" }}
+          // style={{ cursor: "pointer" }}
           >
             My Files
           </Breadcrumb.Item>
@@ -193,6 +234,7 @@ const MyFileDetails = () => {
                   showCheckbox={true}
                   onCheckboxChange={handleCheckboxChange}
                   onClick={handleFolderCardClick}
+                  handleDownload={handleFileDownload}
                 />
               </>
             );
@@ -213,6 +255,7 @@ const MyFileDetails = () => {
                   showCheckbox={true}
                   onCheckboxChange={handleCheckboxChange}
                   onClick={handleFileCardClick}
+                  handleDownload={handleFileDownload}
                 />
               </>
             );
@@ -220,18 +263,18 @@ const MyFileDetails = () => {
         </div>
         {(data?.data?.next_folder?.length === 0 ||
           data?.data?.files?.length === 0) && (
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              height: "40vh",
-              width: "100%",
-            }}
-          >
-            <Empty />
-          </div>
-        )}
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "40vh",
+                width: "100%",
+              }}
+            >
+              <Empty />
+            </div>
+          )}
       </div>
     </div>
   );

@@ -40,7 +40,7 @@ interface FileCardProps {
   syncStatus?: "online" | "offline" | "syncing" | "error" | "shared" | "locked";
   onCheckboxChange?: (id: number, type: string, checked: boolean) => void;
   onClick?: (type: string, id: number) => void;
-  handleDownload?: () => void;
+  handleDownload?: (type: string, id: number) => void;
 }
 
 const FolderFileCard: React.FC<FileCardProps> = ({
@@ -347,7 +347,7 @@ const FolderFileCard: React.FC<FileCardProps> = ({
     },
     {
       key: "2",
-      label: <small onClick={handleDownload}>Download</small>,
+      label: <small onClick={()=> handleDownload?.(type, id)}>Download</small>,
     },
     {
       key: "3",
