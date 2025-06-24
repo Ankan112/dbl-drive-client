@@ -10,6 +10,8 @@ import {
   Typography,
 } from "antd";
 import { useEffect, useState } from "react";
+import { Modal} from 'antd';
+import { FileExcelOutlined, FileUnknownOutlined } from '@ant-design/icons';
 import { useLocation, useNavigate } from "react-router";
 import { DownloadURL } from "../../../app/slice/baseQuery";
 import {
@@ -106,9 +108,80 @@ const MyFileDetails = () => {
 
       // List of extensions that should open in Google Docs
       const googleDocsExtensions = [
-        'doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx', 'txt', 'rtf'
+        'doc', 'docx', 'ppt', 'pptx', 'txt', 'rtf'
       ];
 
+      // List of Excel formats we want to confirm + download
+      const excelExtensions = ['xls', 'xlsx'];
+
+      // List of unsupported formats that should trigger direct download
+      const unsupportedExtensions = [
+        'exe', 'zip', 'tar', 'rar', 'js', 'bat', 'cmd', 'sql'
+      ];
+
+      // Handle Excel files: show confirmation modal for download
+      if (excelExtensions.includes(extension || '')) {
+        Modal.confirm({
+          title: 'Download Excel File',
+          icon: <FileExcelOutlined style={{ fontSize: '24px', color: '#4caf50' }} />, // Excel icon
+          content: 'Excel files can\'t be opened directly in the browser. Do you want to download this file?',
+          okText: 'Yes, Download',
+          cancelText: 'No',
+          centered: true, // Center the modal
+          okButtonProps: {
+            style: { backgroundColor: '#4caf50', color: '#fff' }, // Green button
+          },
+          cancelButtonProps: {
+            style: { backgroundColor: '#f44336', color: '#fff' }, // Red button
+          },
+          onOk() {
+            // Trigger download
+            const a = document.createElement('a');
+            a.href = filePath;
+            a.download = filePath.split('/').pop() || 'file.xlsx';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          },
+          onCancel() {
+            console.log('Download canceled');
+          }
+        });
+        return; // Stop further processing
+      }
+
+      // Handle unsupported files (e.g., .exe, .zip, .sql)
+      if (unsupportedExtensions.includes(extension || '')) {
+        Modal.confirm({
+          title: 'Unsupported File Type',
+          icon: <FileUnknownOutlined style={{ fontSize: '24px', color: '#f44336' }} />, // Unknown file icon
+          content: `The file type .${extension} is not supported for viewing in the browser. Would you like to download it?`,
+          okText: 'Yes, Download',
+          cancelText: 'No',
+          centered: true, // Center the modal
+          okButtonProps: {
+            style: { backgroundColor: '#4caf50', color: '#fff' }, // Green button
+          },
+          cancelButtonProps: {
+            style: { backgroundColor: '#f44336', color: '#fff' }, // Red button
+          },
+          onOk() {
+            // Trigger download for unsupported files
+            const a = document.createElement('a');
+            a.href = filePath;
+            a.download = filePath.split('/').pop() || 'file';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+          },
+          onCancel() {
+            console.log('Download canceled');
+          }
+        });
+        return; // Stop further processing
+      }
+
+      // Handle all other cases: Open in browser (Google Docs Viewer or other formats)
       let urlToOpen = filePath;
 
       if (googleDocsExtensions.includes(extension || '')) {
@@ -116,7 +189,7 @@ const MyFileDetails = () => {
         urlToOpen = `https://docs.google.com/viewer?url=${encodeURIComponent(filePath)}`;
       }
 
-      // Open all files in new tab
+      // Open all other files in a new tab
       window.open(urlToOpen, "_blank");
 
     } catch (error) {
