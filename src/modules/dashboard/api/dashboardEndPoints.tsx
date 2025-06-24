@@ -29,6 +29,25 @@ export const dashboardEndpoints = api.injectEndpoints({
         { type: "myFileTypes", id: "myFile" },
       ],
     }),
+    updateName: build.mutation<
+      HTTPResponse<void>,
+      { body: { name: string }; id: number }
+    >({
+      query: ({ body, id }) => ({
+        url: `/file/update/${id}`,
+        method: "PUT",
+        body: body,
+      }),
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        asyncWrapper(async () => {
+          message.success("Successfully File or Folder Renamed!");
+        });
+      },
+      invalidatesTags: () => [
+        { type: "dashboardTypes", id: "dashboard" },
+        { type: "myFileTypes", id: "myFile" },
+      ],
+    }),
     getFolderList: build.query<HTTPResponse<IFolderList[]>, void>({
       query: () => ({
         url: `/folder/list`,
@@ -85,4 +104,5 @@ export const {
   useGetFolderListQuery,
   useGetFileAndFolderListQuery,
   useUploadFilesMutation,
+  useUpdateNameMutation,
 } = dashboardEndpoints;

@@ -1,24 +1,33 @@
 import { FolderAddOutlined, SendOutlined } from "@ant-design/icons";
-import { Button, Card, Col, Form, Input, Row } from "antd";
+import { Button, Col, Form, Input, Row } from "antd";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCommonModal } from "../../../app/slice/modalSlice";
-import { useCreateFolderMutation } from "../api/dashboardEndPoints";
-import { ICreateFolder } from "../types/dashboardTypes";
+import { useUpdateNameMutation } from "../api/dashboardEndPoints";
 
-const CreateFolder = ({ parentId }: { parentId?: number | null }) => {
+const RenameFolder = ({
+  id,
+  name,
+  type,
+}: {
+  id?: number;
+  name: string;
+  type: string;
+}) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [create, { isSuccess, isLoading }] = useCreateFolderMutation();
+  const [update, { isSuccess, isLoading }] = useUpdateNameMutation();
 
-  const onFinish = (data: ICreateFolder) => {
-    const formattedData = { ...data };
-    if (parentId) {
-      formattedData.parent_id = parentId;
-    }
-    create(formattedData).unwrap();
+  const fileOrFolderName = type === "file" ? name?.split(".")[0] : name;
+
+  const onFinish = (data: { name: string }) => {
+    update({ body: data, id: Number(id) });
   };
-
+  useEffect(() => {
+    if (fileOrFolderName) {
+      form.setFieldsValue({ name: fileOrFolderName });
+    }
+  }, [form, fileOrFolderName]);
   useEffect(() => {
     if (isSuccess) {
       dispatch(setCommonModal());
@@ -52,7 +61,7 @@ const CreateFolder = ({ parentId }: { parentId?: number | null }) => {
             icon={<SendOutlined />}
             loading={isLoading}
           >
-            Create
+            Update
           </Button>
         </div>
       </Form.Item>
@@ -60,4 +69,4 @@ const CreateFolder = ({ parentId }: { parentId?: number | null }) => {
   );
 };
 
-export default CreateFolder;
+export default RenameFolder;

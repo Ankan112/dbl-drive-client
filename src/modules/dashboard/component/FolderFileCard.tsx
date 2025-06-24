@@ -27,6 +27,10 @@ import {
 } from "@ant-design/icons";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { MenuProps } from "antd/lib";
+import { useMoveToRecycleBinMutation } from "../../recycleBin/api/recycleBinEndpoint";
+import { useDispatch } from "react-redux";
+import { setCommonModal } from "../../../app/slice/modalSlice";
+import RenameFolder from "./RenameFolder";
 
 interface FileCardProps {
   id: number;
@@ -37,10 +41,12 @@ interface FileCardProps {
   createdAt?: string;
   isSelected?: boolean;
   showCheckbox?: boolean;
+  showThreeDot?: boolean;
+  showDelete?: boolean;
   syncStatus?: "online" | "offline" | "syncing" | "error" | "shared" | "locked";
   onCheckboxChange?: (id: number, type: string, checked: boolean) => void;
   onClick?: (type: string, id: number) => void;
-  handleDownload?: () => void;
+  handleDownload?: (type: string, id: number) => void;
 }
 
 const FolderFileCard: React.FC<FileCardProps> = ({
@@ -52,11 +58,23 @@ const FolderFileCard: React.FC<FileCardProps> = ({
   size,
   isSelected = false,
   showCheckbox = true,
+  showThreeDot = true,
+  showDelete = true,
   syncStatus,
   onCheckboxChange,
   onClick,
   handleDownload,
 }) => {
+  const dispatch = useDispatch();
+
+  const [moveToRecycle] = useMoveToRecycleBinMutation();
+  const handleRecycleBin = ({ id, type }: { id: number; type: string }) => {
+    const selectedItems = {
+      fileIds: type === "file" ? [id] : [],
+      folderIds: type === "folder" ? [id] : [],
+    };
+    moveToRecycle(selectedItems);
+  };
   // Comprehensive file extension to icon and color mapping
   const getFileIcon = (fileName: string, fileType: string) => {
     if (fileType === "folder") {
@@ -347,17 +365,40 @@ const FolderFileCard: React.FC<FileCardProps> = ({
     },
     {
       key: "2",
-      label: <small onClick={handleDownload}>Download</small>,
+      label: <small onClick={() => handleDownload?.(type, id)}>Download</small>,
     },
     {
       key: "3",
-      label: <small>Rename</small>,
+      label: (
+        <small
+          onClick={() =>
+            dispatch(
+              setCommonModal({
+                title: "Rename",
+                content: <RenameFolder id={id} name={name} type={type} />,
+                show: true,
+                width: 420,
+              })
+            )
+          }
+        >
+          Rename
+        </small>
+      ),
     },
-    {
-      key: "4",
-      label: <small>Delete</small>,
-      danger: true,
-    },
+    ...(showDelete
+      ? [
+          {
+            key: "4",
+            label: (
+              <small onClick={() => handleRecycleBin({ id, type })}>
+                Delete
+              </small>
+            ),
+            danger: true,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -384,11 +425,16 @@ const FolderFileCard: React.FC<FileCardProps> = ({
             </div>
           )}
         </div>
-        <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
-          <Dropdown trigger={["click"]} menu={{ items }}>
-            <BsThreeDotsVertical className="opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
-          </Dropdown>
-        </div>
+        {showThreeDot ? (
+          <div
+            className="flex justify-end"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Dropdown trigger={["click"]} menu={{ items }}>
+              <BsThreeDotsVertical className="opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
+            </Dropdown>
+          </div>
+        ) : null}
       </Flex>
       <div className="flex flex-col items-center text-center space-y-1">
         {/* File/Folder Icon with Sync Status */}
