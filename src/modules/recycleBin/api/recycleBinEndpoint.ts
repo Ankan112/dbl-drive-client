@@ -3,6 +3,7 @@ import { api } from "../../../app/api/api";
 import { HTTPResponse } from "../../../app/types/commonTypes";
 import asyncWrapper from "../../../utils/asyncWrapper";
 import { IRecycleBin, IRecycleBinList } from "../types/RecycleBinTypes";
+import { IPaginationParams } from "../../myFile/types/myFileTypes";
 
 export const recycleBinEndpoint = api.injectEndpoints({
   endpoints: (build) => ({
@@ -56,9 +57,13 @@ export const recycleBinEndpoint = api.injectEndpoints({
         { type: "myFileTypes", id: "myFile" },
       ],
     }),
-    getRecycleBinList: build.query<HTTPResponse<IRecycleBinList[]>, void>({
-      query: () => ({
+    getRecycleBinList: build.query<
+      HTTPResponse<IRecycleBinList[]>,
+      IPaginationParams
+    >({
+      query: (params) => ({
         url: `/file/recycle-bin-list`,
+        params,
       }),
       providesTags: () => [{ type: "recycleBinList", id: "recycle" }],
     }),

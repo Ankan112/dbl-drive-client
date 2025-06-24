@@ -1,4 +1,4 @@
-import { message } from "antd";
+import { message, Pagination } from "antd";
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import { DownloadURL } from "../../../app/slice/baseQuery";
@@ -8,24 +8,32 @@ import {
 } from "../api/dashboardEndPoints";
 import CommonHeader from "../component/CommonHeader";
 import FolderFileCard from "../component/FolderFileCard";
+import { IPaginationParams } from "../../myFile/types/myFileTypes";
 
 const Home = () => {
   const location = useLocation();
-  const { data } = useGetFileAndFolderListQuery();
   const [parentId, setParentId] = useState<number | null>(null);
-  const [searchTerm, setSearchTerm] = useState("");
   const navigate = useNavigate();
   const [fetchFileDetails] = useLazyGetFileDetailsQuery();
 
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(40);
+  const skipValue = (page - 1) * pageSize;
+  const [filter, setFilter] = useState<IPaginationParams>({
+    limit: Number(pageSize),
+    offset: skipValue,
+  });
+  const handlePaginationChange = (current: number, size: number) => {
+    setPage(current);
+    setPageSize(size);
+    setFilter({ ...filter, offset: (current - 1) * size, limit: size });
+  };
+  const { data } = useGetFileAndFolderListQuery({ ...filter });
   useEffect(() => {
     if (location.pathname === "/") {
       setParentId(null);
     }
   }, [location.pathname]);
-
-  const filteredFiles = data?.data?.filter((file) =>
-    file.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   const handleCardClick = async (type: string, id: number) => {
     if (type === "folder") {
@@ -34,7 +42,7 @@ const Home = () => {
     }
 
     try {
-      const res = await fetchFileDetails(id); // Fetch file details manually
+      const res = await fetchFileDetails(id);
       const filePath = `${DownloadURL}/media/${res?.data?.data?.path_name}`;
 
       const fileName = res?.data?.data?.file_name;
@@ -74,10 +82,17 @@ const Home = () => {
   return (
     <div className="h-screen bg-white flex flex-col">
       {/* Header */}
-      <CommonHeader title="Recent Files" parentId={parentId} />
+      <CommonHeader
+        title="Recent Files"
+        showUploadButton
+        parentId={parentId}
+        onChange={(e) =>
+          setFilter({ ...filter, key: e.target.value, offset: 0 })
+        }
+      />
       {/* Content */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-        {filteredFiles?.map((item) => (
+        {data?.data?.map((item) => (
           <FolderFileCard
             key={item.id}
             id={item.id}
@@ -94,6 +109,21 @@ const Home = () => {
           />
         ))}
       </div>
+      {(data?.count || 0) > 40 ? (
+        <div className="mt-4">
+          <Pagination
+            size="small"
+            align="end"
+            pageSizeOptions={["40", "50", "100", "200"]}
+            current={page}
+            pageSize={pageSize}
+            total={data?.count || 0}
+            showTotal={(total) => `Total ${total}`}
+            onChange={handlePaginationChange}
+            showSizeChanger
+          />
+        </div>
+      ) : null}
     </div>
   );
 };

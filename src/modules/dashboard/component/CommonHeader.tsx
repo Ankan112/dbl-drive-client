@@ -399,9 +399,16 @@ import { useEffect, useState } from "react";
 interface Props {
   title: string;
   parentId?: number | null;
+  onChange?: (value: any) => void;
+  showUploadButton?: boolean;
 }
 
-const CommonHeader = ({ title, parentId }: Props) => {
+const CommonHeader = ({
+  title,
+  parentId,
+  onChange,
+  showUploadButton,
+}: Props) => {
   const [upload] = useUploadFilesMutation();
   const dispatch = useDispatch();
 
@@ -654,42 +661,45 @@ const CommonHeader = ({ title, parentId }: Props) => {
     <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white">
       <div className="flex items-center gap-4">
         <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-        <div className="flex items-center gap-2">
-          <Dropdown
-            overlay={uploadMenu(handleMenuClick)}
-            trigger={["click"]}
-            placement="bottomLeft"
-          >
-            <Button
-              type="primary"
-              icon={<CloudUploadOutlined />}
-              className="bg-blue-600 hover:bg-blue-700 border-blue-600 rounded-sm h-8"
+        {showUploadButton && (
+          <div className="flex items-center gap-2">
+            <Dropdown
+              overlay={uploadMenu(handleMenuClick)}
+              trigger={["click"]}
+              placement="bottomLeft"
             >
-              Upload
+              <Button
+                type="primary"
+                icon={<CloudUploadOutlined />}
+                className="bg-blue-600 hover:bg-blue-700 border-blue-600 rounded-sm h-8"
+              >
+                Upload
+              </Button>
+            </Dropdown>
+            <Button
+              icon={<FolderAddOutlined />}
+              className="h-8 rounded-sm border-gray-300"
+              onClick={() =>
+                dispatch(
+                  setCommonModal({
+                    title: "New Folder",
+                    content: <CreateFolder parentId={parentId} />,
+                    show: true,
+                    width: 420,
+                  })
+                )
+              }
+            >
+              New folder
             </Button>
-          </Dropdown>
-          <Button
-            icon={<FolderAddOutlined />}
-            className="h-8 rounded-sm border-gray-300"
-            onClick={() =>
-              dispatch(
-                setCommonModal({
-                  title: "New Folder",
-                  content: <CreateFolder parentId={parentId} />,
-                  show: true,
-                  width: 420,
-                })
-              )
-            }
-          >
-            New folder
-          </Button>
-        </div>
+          </div>
+        )}
       </div>
       <Input
         className="w-64 rounded-sm border-gray-300"
         prefix={<SearchOutlined className="text-gray-400" />}
         placeholder="Search"
+        onChange={onChange}
       />
     </div>
   );

@@ -1,5 +1,13 @@
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { Button, Checkbox, Input, message, Tooltip, Typography } from "antd";
+import {
+  Button,
+  Checkbox,
+  Input,
+  message,
+  Pagination,
+  Tooltip,
+  Typography,
+} from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { DownloadURL } from "../../../app/slice/baseQuery";
@@ -7,16 +15,12 @@ import { useLazyGetFileDetailsQuery } from "../../dashboard/api/dashboardEndPoin
 import FolderFileCard from "../../dashboard/component/FolderFileCard";
 import { useMoveToRecycleBinMutation } from "../../recycleBin/api/recycleBinEndpoint";
 import { useGetMyFileListQuery } from "../api/myFileEndpoint";
-import { IMyFileList } from "../types/myFileTypes";
+import { IMyFileList, IPaginationParams } from "../types/myFileTypes";
 import CommonHeader from "../../dashboard/component/CommonHeader";
+
 const MyFile = () => {
   const navigate = useNavigate();
-  const { data } = useGetMyFileListQuery();
   const [parentId, setParentId] = useState<number | null>(null);
-  const [fetchFileDetails] = useLazyGetFileDetailsQuery();
-
-  const [moveToRecycle] = useMoveToRecycleBinMutation();
-
   const [selectedItems, setSelectedItems] = useState<{
     fileIds: number[];
     folderIds: number[];
@@ -25,6 +29,24 @@ const MyFile = () => {
     folderIds: [],
   });
   const [selectAll, setSelectAll] = useState(false);
+
+  const [fetchFileDetails] = useLazyGetFileDetailsQuery();
+  const [moveToRecycle] = useMoveToRecycleBinMutation();
+
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(40);
+  const skipValue = (page - 1) * pageSize;
+  const [filter, setFilter] = useState<IPaginationParams>({
+    limit: Number(pageSize),
+    offset: skipValue,
+  });
+  const handlePaginationChange = (current: number, size: number) => {
+    setPage(current);
+    setPageSize(size);
+    setFilter({ ...filter, offset: (current - 1) * size, limit: size });
+  };
+
+  const { data } = useGetMyFileListQuery({ ...filter });
 
   useEffect(() => {
     if (location.pathname === "/") {
@@ -120,7 +142,14 @@ const MyFile = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <CommonHeader title="My Files" parentId={Number(parentId)} />
+      <CommonHeader
+        title="My Files"
+        showUploadButton
+        parentId={Number(parentId)}
+        onChange={(e) =>
+          setFilter({ ...filter, key: e.target.value, offset: 0 })
+        }
+      />
 
       {/* Actions */}
       <div className="flex items-center justify-between px-6 py-4 bg-white border-b border-gray-200">
@@ -174,6 +203,21 @@ const MyFile = () => {
             );
           })}
         </div>
+        {(data?.count || 0) > 40 ? (
+          <div className="mt-4">
+            <Pagination
+              size="small"
+              align="end"
+              pageSizeOptions={["40", "50", "100", "200"]}
+              current={page}
+              pageSize={pageSize}
+              total={data?.count || 0}
+              showTotal={(total) => `Total ${total}`}
+              onChange={handlePaginationChange}
+              showSizeChanger
+            />
+          </div>
+        ) : null}
       </div>
     </div>
   );

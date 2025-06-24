@@ -2,7 +2,7 @@ import { message } from "antd";
 import { api } from "../../../app/api/api";
 import { HTTPResponse } from "../../../app/types/commonTypes";
 import asyncWrapper from "../../../utils/asyncWrapper";
-import { IMyFileList } from "../types/myFileTypes";
+import { IMyFileList, IPaginationParams } from "../types/myFileTypes";
 
 export const myFileEndpoint = api.injectEndpoints({
   endpoints: (build) => ({
@@ -19,9 +19,10 @@ export const myFileEndpoint = api.injectEndpoints({
     //   },
     //   invalidatesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
     // }),
-    getMyFileList: build.query<HTTPResponse<IMyFileList[]>, void>({
-      query: () => ({
+    getMyFileList: build.query<HTTPResponse<IMyFileList[]>, IPaginationParams>({
+      query: (params) => ({
         url: `/file/my-list`,
+        params,
       }),
       providesTags: () => [{ type: "myFileTypes", id: "myFile" }],
     }),

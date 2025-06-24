@@ -195,10 +195,11 @@ import {
 import { IRecycleBinList } from "../types/RecycleBinTypes";
 import { useState, useEffect } from "react";
 import FolderFileCard from "../../dashboard/component/FolderFileCard";
+import { IPaginationParams } from "../../myFile/types/myFileTypes";
+import CommonHeader from "../../dashboard/component/CommonHeader";
 // Import the FileCard component
 
 const RecycleBin = () => {
-  const { data, isLoading } = useGetRecycleBinListQuery();
   const [deletePermanently] = usePermanentDeleteFileMutation();
   const [restoredFile] = useRestoreFileMutation();
 
@@ -211,12 +212,19 @@ const RecycleBin = () => {
   });
 
   const [selectAll, setSelectAll] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  // Filter data based on search term
-  const filteredData = data?.data?.filter((item: IRecycleBinList) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(40);
+  const skipValue = (page - 1) * pageSize;
+  const [filter, setFilter] = useState<IPaginationParams>({
+    limit: Number(pageSize),
+    offset: skipValue,
+  });
+  const handlePaginationChange = (current: number, size: number) => {
+    setPage(current);
+    setPageSize(size);
+    setFilter({ ...filter, offset: (current - 1) * size, limit: size });
+  };
+  const { data } = useGetRecycleBinListQuery({ ...filter });
 
   const handleCheckboxChange = (id: number, type: string, checked: boolean) => {
     setSelectedItems((prev) => {
@@ -241,11 +249,11 @@ const RecycleBin = () => {
 
   const handleSelectAll = (checked: boolean) => {
     setSelectAll(checked);
-    if (checked && filteredData?.length) {
-      const fileIds = filteredData
+    if (checked && data?.data?.length) {
+      const fileIds = data?.data
         .filter((item) => item.type === "file")
         .map((item) => item.id);
-      const folderIds = filteredData
+      const folderIds = data?.data
         .filter((item) => item.type === "folder")
         .map((item) => item.id);
 
@@ -261,28 +269,19 @@ const RecycleBin = () => {
   return (
     <div className="min-h-screen flex flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-white">
-        <Typography.Title level={4} className="!mb-0">
-          Recycle Bin
-        </Typography.Title>
-
-        <Input
-          className="w-64 rounded-sm border-gray-300"
-          prefix={<SearchOutlined className="text-gray-400" />}
-          placeholder="Search files and folders..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          allowClear
-        />
-      </div>
-
+      <CommonHeader
+        title="Recycle Bin"
+        onChange={(e) =>
+          setFilter({ ...filter, key: e.target.value, offset: 0 })
+        }
+      />
       {/* Actions Bar */}
       <div className="flex items-center justify-between px-6 py-4 ">
         <div className="flex items-center space-x-4">
           <Checkbox
             checked={selectAll}
             onChange={(e) => handleSelectAll(e.target.checked)}
-            disabled={!filteredData?.length}
+            disabled={!data?.data?.length}
           >
             Select All
           </Checkbox>
@@ -324,7 +323,7 @@ const RecycleBin = () => {
       {/* Content Area */}
       <div>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
-          {filteredData?.map((item: IRecycleBinList) => {
+          {data?.data?.map((item: IRecycleBinList) => {
             const isSelected =
               item.type === "file"
                 ? selectedItems.fileIds.includes(item.id)

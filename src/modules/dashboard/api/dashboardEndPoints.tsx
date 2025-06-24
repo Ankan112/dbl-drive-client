@@ -9,6 +9,7 @@ import {
   IFolderDetails,
   IFolderList,
 } from "../types/dashboardTypes";
+import { IPaginationParams } from "../../myFile/types/myFileTypes";
 
 export const dashboardEndpoints = api.injectEndpoints({
   endpoints: (build) => ({
@@ -46,14 +47,16 @@ export const dashboardEndpoints = api.injectEndpoints({
       }),
       providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
     }),
-    getFileAndFolderList: build.query<HTTPResponse<IFileAndFolderList[]>, void>(
-      {
-        query: () => ({
-          url: `/file/list`,
-        }),
-        providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
-      }
-    ),
+    getFileAndFolderList: build.query<
+      HTTPResponse<IFileAndFolderList[]>,
+      IPaginationParams
+    >({
+      query: (params) => ({
+        url: `/file/list`,
+        params,
+      }),
+      providesTags: () => [{ type: "dashboardTypes", id: "dashboard" }],
+    }),
     uploadFiles: build.mutation<HTTPResponse<void>, FormData>({
       query: (body) => ({
         url: "/file/upload-file",
