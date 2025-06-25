@@ -52,6 +52,7 @@ const HomeDetails = () => {
       // List of unsupported formats that should trigger direct download
       const unsupportedExtensions = [
         "exe",
+        "mkv",
         "zip",
         "tar",
         "rar",
@@ -233,6 +234,7 @@ const HomeDetails = () => {
                   onClick={handleFolderCardClick}
                   handleDownload={handleFileDownload}
                   showDelete={false}
+                  showRename={false}
                 />
               </>
             );
@@ -254,6 +256,7 @@ const HomeDetails = () => {
                   onClick={handleFileCardClick}
                   handleDownload={handleFileDownload}
                   showDelete={false}
+                  showRename={false}
                 />
               </>
             );

@@ -3,7 +3,7 @@ import { Button, Col, Form, Input, Row } from "antd";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCommonModal } from "../../../app/slice/modalSlice";
-import { useUpdateNameMutation } from "../api/dashboardEndPoints";
+import { useUpdateFileNameMutation, useUpdateFolderNameMutation } from "../api/dashboardEndPoints";
 
 const RenameFolder = ({
   id,
@@ -16,24 +16,36 @@ const RenameFolder = ({
 }) => {
   const [form] = Form.useForm();
   const dispatch = useDispatch();
-  const [update, { isSuccess, isLoading }] = useUpdateNameMutation();
+
+  const [updateFileName, fileResult] = useUpdateFileNameMutation();
+  const [updateFolderName, folderResult] = useUpdateFolderNameMutation();
+
+  const { isSuccess, isLoading } =
+    type === "file" ? fileResult : folderResult;
 
   const fileOrFolderName = type === "file" ? name?.split(".")[0] : name;
 
   const onFinish = (data: { name: string }) => {
-    update({ body: data, id: Number(id) });
+    if (type === "file") {
+      updateFileName({ body: data, id: Number(id) });
+    } else {
+      updateFolderName({ body: data, id: Number(id) });
+    }
   };
+
   useEffect(() => {
     if (fileOrFolderName) {
       form.setFieldsValue({ name: fileOrFolderName });
     }
   }, [form, fileOrFolderName]);
+
   useEffect(() => {
     if (isSuccess) {
       dispatch(setCommonModal());
       form.resetFields();
     }
-  }, [isSuccess]);
+  }, [isSuccess, dispatch, form]);
+
   return (
     <Form layout="vertical" form={form} onFinish={onFinish}>
       <Row align={"middle"} gutter={[5, 16]}>

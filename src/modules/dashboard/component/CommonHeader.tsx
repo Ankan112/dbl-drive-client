@@ -4,6 +4,7 @@ import {
   CloudUploadOutlined,
   FileExcelOutlined,
   FileOutlined,
+  FilePdfOutlined,
   FilePptOutlined,
   FileWordOutlined,
   FolderAddOutlined,
@@ -25,7 +26,6 @@ import { setCommonModal } from "../../../app/slice/modalSlice";
 import CreateFolder from "./CreateFolder";
 import { useDispatch } from "react-redux";
 import { useUploadFilesMutation } from "../api/dashboardEndPoints";
-import { useEffect, useState } from "react";
 
 interface Props {
   title: string;
@@ -47,14 +47,6 @@ const CommonHeader = ({
   const [upload] = useUploadFilesMutation();
   const dispatch = useDispatch();
 
-  // const formatFileSize = (bytes: number): string => {
-  //   if (bytes === 0) return "0 Bytes";
-  //   const k = 1024;
-  //   const sizes = ["Bytes", "KB", "MB", "GB"];
-  //   const i = Math.floor(Math.log(bytes) / Math.log(k));
-  //   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
-  // };
-
   const showUploadNotification = (file: File) => {
     const key = `upload-${file.name}-${Date.now()}`;
     let progress = 0;
@@ -66,11 +58,7 @@ const CommonHeader = ({
         key,
         message: `Uploading: ${file.name}`,
         description: (
-          <Progress
-            percent={Math.round(progress)}
-            size="small"
-            showInfo={false}
-          />
+          <Progress percent={Math.round(progress)} size="small" showInfo={false} />
         ),
         icon: <CloudUploadOutlined style={{ color: "#1890ff" }} />,
         duration: 0,
@@ -119,11 +107,8 @@ const CommonHeader = ({
 
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
-
       if (files && files.length > 0) {
-        Array.from(files).forEach((file) => {
-          showUploadNotification(file);
-        });
+        Array.from(files).forEach((file) => showUploadNotification(file));
       }
     };
 
@@ -137,62 +122,8 @@ const CommonHeader = ({
 
     input.onchange = (e) => {
       const files = (e.target as HTMLInputElement).files;
-
       if (files) {
-        Array.from(files).forEach((file) => {
-          const key = `upload-${file.name}-${Date.now()}`;
-          let progress = 0;
-
-          const interval = setInterval(() => {
-            progress = Math.min(progress + Math.random() * 15 + 5, 100);
-
-            notification.open({
-              key,
-              message: `Uploading: ${file.name}`,
-              description: (
-                <Progress
-                  percent={Math.round(progress)}
-                  size="small"
-                  showInfo={false}
-                />
-              ),
-              icon: <CloudUploadOutlined style={{ color: "#1890ff" }} />,
-              duration: 0,
-              placement: "bottomRight",
-            });
-
-            if (progress >= 100) {
-              clearInterval(interval);
-
-              const formData = new FormData();
-              if (parentId) {
-                formData.append("folder_id", parentId.toString());
-              }
-              formData.append("files", file);
-
-              upload(formData)
-                .unwrap()
-                .then(() => {
-                  notification.success({
-                    key,
-                    message: `Uploaded: ${file.name}`,
-                    description: "The file was uploaded successfully.",
-                    icon: <CheckCircleOutlined style={{ color: "#52c41a" }} />,
-                    placement: "bottomRight",
-                  });
-                })
-                .catch(() => {
-                  notification.error({
-                    key,
-                    message: `Upload failed: ${file.name}`,
-                    description: "Something went wrong while uploading.",
-                    icon: <CloseOutlined style={{ color: "#ff4d4f" }} />,
-                    placement: "bottomRight",
-                  });
-                });
-            }
-          }, 200);
-        });
+        Array.from(files).forEach((file) => showUploadNotification(file));
       }
     };
 
@@ -201,7 +132,22 @@ const CommonHeader = ({
 
   const handleMenuClick = (key: string) => {
     switch (key) {
-      case "folder":
+      case "files":
+        handleFileUpload("*/*", true);
+        break;
+      case "folder-upload":
+        handleFolderUpload();
+        break;
+      case "word":
+        handleFileUpload(".doc,.docx");
+        break;
+      case "excel":
+        handleFileUpload(".xls,.xlsx");
+        break;
+      case "powerpoint":
+        handleFileUpload(".ppt,.pptx");
+        break;
+      default:
         dispatch(
           setCommonModal({
             title: "New Folder",
@@ -211,160 +157,90 @@ const CommonHeader = ({
           })
         );
         break;
-      case "files":
-        handleFileUpload("*/*", true);
-        break;
-      case "folder-upload":
-        handleFolderUpload();
-        break;
-      case "word":
-        handleFileUpload(
-          ".doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-        );
-        break;
-      case "excel":
-        handleFileUpload(
-          ".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-        );
-        break;
-      case "powerpoint":
-        handleFileUpload(
-          ".ppt,.pptx,application/vnd.ms-powerpoint,application/vnd.openxmlformats-officedocument.presentationml.presentation"
-        );
-        break;
-      case "onenote":
-        handleFileUpload(".one,.onetoc2");
-        break;
-      default:
-        break;
     }
   };
 
-  const uploadMenu = (handleMenuClick: (key: string) => void) => (
-    <Menu className="w-56" onClick={({ key }) => handleMenuClick(key)}>
-      {[
-        {
-          key: "folder",
-          icon: <FolderAddOutlined className="text-blue-500" />,
-          text: "Folder",
-        },
-        { key: "divider1", isDivider: true },
-        {
-          key: "files",
-          icon: <CloudUploadOutlined className="text-gray-500" />,
-          text: "Files upload",
-        },
-        {
-          key: "folder-upload",
-          icon: <FolderOpenOutlined className="text-gray-500" />,
-          text: "Folder upload",
-        },
-        { key: "divider2", isDivider: true },
-        {
-          key: "word",
-          icon: <FileWordOutlined className="text-blue-600" />,
-          text: "Word document",
-        },
-        {
-          key: "excel",
-          icon: <FileExcelOutlined className="text-green-600" />,
-          text: "Excel workbook",
-        },
-        {
-          key: "powerpoint",
-          icon: <FilePptOutlined className="text-red-600" />,
-          text: "PowerPoint presentation",
-        },
-        {
-          key: "onenote",
-          icon: <FileOutlined className="text-purple-600" />,
-          text: "OneNote notebook",
-        },
-      ].map((item) =>
-        item.isDivider ? (
-          <Menu.Divider key={item.key} />
-        ) : (
-          <Menu.Item key={item.key} icon={item.icon} className="py-2">
-            <span className="text-sm">{item.text}</span>
-          </Menu.Item>
-        )
-      )}
+  const uploadMenu = (
+    <Menu onClick={({ key }) => handleMenuClick(key)}>
+      <Menu.Item key="files" icon={<CloudUploadOutlined style={{ color: "#1890ff" }} />}>
+        Upload Files
+      </Menu.Item>
+      {/* <Menu.Item key="folder-upload" icon={<FolderOpenOutlined style={{ color: "#4CAF50" }} />}>
+        Upload Folder
+      </Menu.Item> */}
+      <Menu.Divider />
+      <Menu.Item key="word" icon={<FileWordOutlined style={{ color: "#1E90FF" }} />}>
+        Word Document
+      </Menu.Item>
+      <Menu.Item key="excel" icon={<FileExcelOutlined style={{ color: "#4CAF50" }} />}>
+        Excel Workbook
+      </Menu.Item>
+      <Menu.Item key="powerpoint" icon={<FilePptOutlined style={{ color: "#FF5722" }} />}>
+        PowerPoint
+      </Menu.Item>
     </Menu>
   );
 
   return (
-    <div className="flex items-center justify-between px-6 py-3 border-b border-gray-200 bg-white">
-      <div className="flex items-center gap-4">
-        <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-        {showUploadButton && (
-          <div className="flex items-center gap-2">
-            <Dropdown
-              overlay={uploadMenu(handleMenuClick)}
-              trigger={["click"]}
-              placement="bottomLeft"
-            >
+    <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
+      <div className="flex flex-wrap justify-between items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-xl font-bold text-gray-800">{title}</h1>
+          {showUploadButton && (
+            <>
+              <Dropdown overlay={uploadMenu} trigger={["click"]}>
+                <Button
+                  type="primary"
+                  icon={<CloudUploadOutlined />}
+                  className="rounded-full bg-blue-600 hover:bg-blue-700 border-none text-white px-5 h-10 shadow-md transition duration-300"
+                >
+                  Upload
+                </Button>
+              </Dropdown>
               <Button
-                type="primary"
-                icon={<CloudUploadOutlined />}
-                className="bg-blue-600 hover:bg-blue-700 border-blue-600 rounded-sm h-8"
+                icon={<FolderAddOutlined />}
+                className="rounded-full bg-blue-600 hover:bg-blue-700 border-none text-white px-5 h-10 shadow-md transition duration-300"
+                onClick={() =>
+                  dispatch(
+                    setCommonModal({
+                      title: "New Folder",
+                      content: <CreateFolder parentId={parentId} />,
+                      show: true,
+                      width: 420,
+                    })
+                  )
+                }
               >
-                Upload
+                New Folder
               </Button>
-            </Dropdown>
-            <Button
-              icon={<FolderAddOutlined />}
-              className="h-8 rounded-sm border-gray-300"
-              onClick={() =>
-                dispatch(
-                  setCommonModal({
-                    title: "New Folder",
-                    content: <CreateFolder parentId={parentId} />,
-                    show: true,
-                    width: 420,
-                  })
-                )
-              }
-            >
-              New folder
-            </Button>
-          </div>
-        )}
-      </div>
-      <Space>
-        <Input
-          className="w-64 rounded-sm border-gray-300"
-          prefix={<SearchOutlined className="text-gray-400" />}
-          placeholder="Search"
-          onChange={onChange}
-        />
-        <Select
-          style={{ width: "180px" }}
-          onChange={onTypesChange}
-          placeholder="Select Types"
-          allowClear
-          showSearch
-          options={[
-            { label: "Folder", value: "folder" },
-            { label: "PDF", value: "pdf" },
-            { label: "Word Document", value: "docx" },
-            { label: "Excel Spreadsheet", value: "xlsx" },
-            { label: "PowerPoint Presentation", value: "pptx" },
-            { label: "Image (JPEG)", value: "jpg" },
-            { label: "Image (PNG)", value: "png" },
-            { label: "Text File", value: "txt" },
-            { label: "SQL File", value: "sql" },
-            { label: "ZIP Archive", value: "zip" },
-            { label: "CSV File", value: "csv" },
-            { label: "Video (MP4)", value: "mp4" },
-          ]}
-        />
+            </>
+          )}
+        </div>
 
-        <DatePicker.RangePicker
-          // presets={rangePreset}
-          style={{ width: "100%" }}
-          onChange={onDateRangeChange}
-        />
-      </Space>
+        <div className="flex flex-wrap gap-2 w-full md:w-auto">
+          <Input
+            className="w-full md:w-64 rounded-full border-gray-300"
+            prefix={<SearchOutlined className="text-gray-400" />}
+            placeholder="Search"
+            onChange={onChange}
+          />
+          <Select
+            className="rounded-full"
+            style={{ minWidth: 160 }}
+            onChange={onTypesChange}
+            placeholder="File Type"
+            allowClear
+            options={[
+              { label: <><FileWordOutlined className="text-blue-600" /> Word</>, value: "docx" },
+              { label: <><FileExcelOutlined className="text-green-600" /> Excel</>, value: "xlsx" },
+              { label: <><FilePptOutlined className="text-red-600" /> PowerPoint</>, value: "pptx" },
+              { label: <><FilePdfOutlined className="text-gray-600" /> PDF</>, value: "pdf" },
+              
+            ]}
+          />
+          <DatePicker.RangePicker className="rounded-full w-full md:w-auto" onChange={onDateRangeChange} />
+        </div>
+      </div>
     </div>
   );
 };

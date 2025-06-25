@@ -62,6 +62,7 @@ const Home = () => {
       // List of unsupported formats that should trigger direct download
       const unsupportedExtensions = [
         "exe",
+        "mkv",
         "zip",
         "tar",
         "rar",
@@ -227,10 +228,13 @@ const Home = () => {
             // size={item.size}
             // isSelected={isChecked}
             showCheckbox={false}
+            
             // onCheckboxChange={handleCheckboxChange}
             onClick={handleCardClick}
             handleDownload={handleDownload}
             showDelete={false}
+            showRename={false}
+            
           />
         ))}
       </div>

@@ -115,6 +115,7 @@ const MyFileDetails = () => {
       // List of unsupported formats that should trigger direct download
       const unsupportedExtensions = [
         "exe",
+        "mkv",
         "zip",
         "tar",
         "rar",

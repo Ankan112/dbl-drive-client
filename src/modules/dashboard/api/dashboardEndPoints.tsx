@@ -29,7 +29,7 @@ export const dashboardEndpoints = api.injectEndpoints({
         { type: "myFileTypes", id: "myFile" },
       ],
     }),
-    updateName: build.mutation<
+    updateFileName: build.mutation<
       HTTPResponse<void>,
       { body: { name: string }; id: number }
     >({
@@ -40,7 +40,26 @@ export const dashboardEndpoints = api.injectEndpoints({
       }),
       onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
         asyncWrapper(async () => {
-          message.success("Successfully File or Folder Renamed!");
+          message.success("Successfully File Renamed!");
+        });
+      },
+      invalidatesTags: () => [
+        { type: "dashboardTypes", id: "dashboard" },
+        { type: "myFileTypes", id: "myFile" },
+      ],
+    }),
+    updateFolderName: build.mutation<
+      HTTPResponse<void>,
+      { body: { name: string }; id: number }
+    >({
+      query: ({ body, id }) => ({
+        url: `/folder/update/${id}`,
+        method: "PUT",
+        body: body,
+      }),
+      onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
+        asyncWrapper(async () => {
+          message.success("Successfully Folder Renamed!");
         });
       },
       invalidatesTags: () => [
@@ -82,12 +101,7 @@ export const dashboardEndpoints = api.injectEndpoints({
         method: "POST",
         body: body,
       }),
-      // onQueryStarted: async (_arg, { dispatch, queryFulfilled }) => {
-      //   asyncWrapper(async () => {
-      //     await queryFulfilled;
-      //     message.success("Successfully files Uploaded!");
-      //   });
-      // },
+      
       invalidatesTags: () => [
         { type: "dashboardTypes", id: "dashboard" },
         { type: "myFileTypes", id: "myFile" },
@@ -104,5 +118,6 @@ export const {
   useGetFolderListQuery,
   useGetFileAndFolderListQuery,
   useUploadFilesMutation,
-  useUpdateNameMutation,
+  useUpdateFileNameMutation,
+  useUpdateFolderNameMutation,
 } = dashboardEndpoints;

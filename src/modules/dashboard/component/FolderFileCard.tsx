@@ -43,6 +43,7 @@ interface FileCardProps {
   showCheckbox?: boolean;
   showThreeDot?: boolean;
   showDelete?: boolean;
+  showRename?: boolean;
   syncStatus?: "online" | "offline" | "syncing" | "error" | "shared" | "locked";
   onCheckboxChange?: (id: number, type: string, checked: boolean) => void;
   onClick?: (type: string, id: number) => void;
@@ -60,6 +61,7 @@ const FolderFileCard: React.FC<FileCardProps> = ({
   showCheckbox = true,
   showThreeDot = true,
   showDelete = true,
+  showRename = true,
   syncStatus,
   onCheckboxChange,
   onClick,
@@ -75,15 +77,13 @@ const FolderFileCard: React.FC<FileCardProps> = ({
     };
     moveToRecycle(selectedItems);
   };
-  // Comprehensive file extension to icon and color mapping
+
   const getFileIcon = (fileName: string, fileType: string) => {
     if (fileType === "folder") {
       return <FolderOutlined className="text-xl text-blue-600" />;
     }
-
     const extension = fileName.split(".").pop()?.toLowerCase();
     switch (extension) {
-      // A
       case "ai":
         return <FileImageOutlined className="text-xl text-orange-600" />;
       case "accdb":
@@ -91,10 +91,8 @@ const FolderFileCard: React.FC<FileCardProps> = ({
         return <DatabaseOutlined className="text-xl text-purple-600" />;
       case "avi":
         return <VideoCameraOutlined className="text-xl text-red-600" />;
-      // B
       case "bmp":
         return <FileImageOutlined className="text-xl text-purple-600" />;
-      // C
       case "css":
       case "cs":
       case "cpp":
@@ -102,45 +100,35 @@ const FolderFileCard: React.FC<FileCardProps> = ({
         return <CodeOutlined className="text-xl text-blue-700" />;
       case "csv":
         return <FileExcelOutlined className="text-xl text-green-600" />;
-      // D
       case "doc":
       case "docx":
         return <FileWordOutlined className="text-xl text-blue-700" />;
       case "dwg":
         return <FileUnknownOutlined className="text-xl text-gray-600" />;
-      // E
       case "exe":
         return <FileOutlined className="text-xl text-gray-600" />;
       case "eml":
         return <FileTextOutlined className="text-xl text-blue-600" />;
-      // F
       case "flv":
         return <VideoCameraOutlined className="text-xl text-red-600" />;
-      // G
       case "gif":
         return <FileImageOutlined className="text-xl text-purple-600" />;
-      // H
       case "html":
       case "htm":
         return <CodeOutlined className="text-xl text-orange-600" />;
-      // I
       case "iso":
         return <FileOutlined className="text-xl text-gray-600" />;
       case "indd":
         return <FileImageOutlined className="text-xl text-orange-600" />;
-      // J
       case "jpg":
       case "jpeg":
         return <PictureOutlined className="text-xl text-purple-600" />;
       case "json":
         return <CodeOutlined className="text-xl text-orange-600" />;
-      // K
       case "key":
         return <FilePptOutlined className="text-xl text-orange-600" />;
-      // L
       case "log":
         return <FileTextOutlined className="text-xl text-gray-600" />;
-      // M
       case "mp3":
         return <AudioOutlined className="text-xl text-blue-600" />;
       case "mp4":
@@ -149,17 +137,14 @@ const FolderFileCard: React.FC<FileCardProps> = ({
         return <VideoCameraOutlined className="text-xl text-red-600" />;
       case "md":
         return <FileMarkdownOutlined className="text-xl text-blue-700" />;
-      // N
       case "notebook":
         return <FileTextOutlined className="text-xl text-purple-600" />;
-      // O
       case "odp":
         return <FilePptOutlined className="text-xl text-orange-600" />;
       case "ods":
         return <FileExcelOutlined className="text-xl text-green-600" />;
       case "odt":
         return <FileWordOutlined className="text-xl text-blue-700" />;
-      // P
       case "pdf":
         return <FilePdfOutlined className="text-xl text-red-600" />;
       case "png":
@@ -169,173 +154,60 @@ const FolderFileCard: React.FC<FileCardProps> = ({
         return <FilePptOutlined className="text-xl text-orange-600" />;
       case "psd":
         return <FileImageOutlined className="text-xl text-orange-600" />;
-      // Q
       case "qt":
         return <VideoCameraOutlined className="text-xl text-red-600" />;
-      // R
       case "rar":
+      case "zip":
         return <FileZipOutlined className="text-xl text-yellow-600" />;
       case "rtf":
         return <FileTextOutlined className="text-xl text-blue-700" />;
-      // S
       case "svg":
         return <FileImageOutlined className="text-xl text-purple-600" />;
       case "sql":
         return <DatabaseOutlined className="text-xl text-blue-600" />;
-      // T
       case "txt":
         return <FileTextOutlined className="text-xl text-blue-700" />;
-      // U
       case "url":
         return <FileAddOutlined className="text-xl text-blue-600" />;
-      // V
       case "vsd":
       case "vsdx":
         return <FileOutlined className="text-xl text-blue-600" />;
-      // W
       case "wav":
         return <AudioOutlined className="text-xl text-blue-600" />;
       case "wmv":
         return <VideoCameraOutlined className="text-xl text-red-600" />;
-      // X
       case "xlsx":
       case "xls":
         return <FileExcelOutlined className="text-xl text-green-600" />;
       case "xml":
         return <CodeOutlined className="text-xl text-orange-600" />;
-      // Y
       case "yaml":
       case "yml":
         return <CodeOutlined className="text-xl text-orange-600" />;
-      // Z
-      case "zip":
-        return <FileZipOutlined className="text-xl text-yellow-600" />;
       default:
         return <FileUnknownOutlined className="text-xl text-gray-600" />;
     }
   };
 
-  // Map file extensions to label colors
-  const getFileLabelColor = (fileName: string, fileType: string) => {
-    if (fileType === "folder") return "text-blue-600";
-    const extension = fileName.split(".").pop()?.toLowerCase();
-    switch (extension) {
-      case "ai":
-      case "indd":
-      case "psd":
-      case "html":
-      case "json":
-      case "xml":
-      case "yaml":
-      case "yml":
-      case "ppt":
-      case "pptx":
-      case "odp":
-      case "key":
-        return "text-orange-600";
-      case "accdb":
-      case "mdb":
-      case "bmp":
-      case "gif":
-      case "jpg":
-      case "jpeg":
-      case "png":
-      case "svg":
-      case "notebook":
-        return "text-purple-600";
-      case "css":
-      case "cs":
-      case "cpp":
-      case "c":
-      case "doc":
-      case "docx":
-      case "odt":
-      case "txt":
-      case "rtf":
-      case "md":
-        return "text-blue-700";
-      case "csv":
-      case "xlsx":
-      case "xls":
-      case "ods":
-        return "text-green-600";
-      case "avi":
-      case "flv":
-      case "mp4":
-      case "mov":
-      case "mpeg":
-      case "qt":
-      case "wmv":
-      case "pdf":
-        return "text-red-600";
-      case "mp3":
-      case "wav":
-      case "sql":
-      case "vsd":
-      case "vsdx":
-      case "eml":
-      case "url":
-        return "text-blue-600";
-      case "rar":
-      case "zip":
-        return "text-yellow-600";
-      default:
-        return "text-gray-600";
-    }
-  };
-
-  // Get sync status icon
   const getSyncStatusIcon = () => {
     switch (syncStatus) {
       case "online":
-        return (
-          <CloudOutlined
-            className="text-xs text-blue-500 absolute bottom-0 right-0"
-            style={{ fontSize: "8px" }}
-          />
-        );
+        return <CloudOutlined className="text-xs text-blue-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
       case "offline":
-        return (
-          <CheckCircleOutlined
-            className="text-xs text-green-500 absolute bottom-0 right-0"
-            style={{ fontSize: "8px" }}
-          />
-        );
+        return <CheckCircleOutlined className="text-xs text-green-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
       case "syncing":
-        return (
-          <SyncOutlined
-            spin
-            className="text-xs text-blue-500 absolute bottom-0 right-0"
-            style={{ fontSize: "8px" }}
-          />
-        );
+        return <SyncOutlined spin className="text-xs text-blue-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
       case "error":
-        return (
-          <CloseCircleOutlined
-            className="text-xs text-red-500 absolute bottom-0 right-0"
-            style={{ fontSize: "8px" }}
-          />
-        );
+        return <CloseCircleOutlined className="text-xs text-red-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
       case "shared":
-        return (
-          <UserOutlined
-            className="text-xs text-blue-500 absolute bottom-0 right-0"
-            style={{ fontSize: "8px" }}
-          />
-        );
+        return <UserOutlined className="text-xs text-blue-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
       case "locked":
-        return (
-          <LockOutlined
-            className="text-xs text-gray-500 absolute bottom-0 right-0"
-            style={{ fontSize: "8px" }}
-          />
-        );
+        return <LockOutlined className="text-xs text-gray-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
       default:
         return null;
     }
   };
 
-  // Format date to OneDrive-like format (e.g., "Oct 10, 2025")
   const formatDate = (dateString?: string) => {
     if (!dateString) return "—";
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -345,14 +217,11 @@ const FolderFileCard: React.FC<FileCardProps> = ({
     });
   };
 
-  // Truncate long file names
   const truncateName = (fileName: string, maxLength: number = 16) => {
     if (fileName.length <= maxLength) return fileName;
     const extensionMatch = fileName.match(/\.([^.]+)$/);
     const extension = extensionMatch ? `.${extensionMatch[1]}` : "";
-    const nameWithoutExtension = extensionMatch
-      ? fileName.slice(0, -extension.length)
-      : fileName;
+    const nameWithoutExtension = extensionMatch ? fileName.slice(0, -extension.length) : fileName;
     const availableLength = maxLength - extension.length - 3;
     if (availableLength <= 0) return fileName.slice(0, maxLength) + "...";
     return nameWithoutExtension.slice(0, availableLength) + "..." + extension;
@@ -363,29 +232,37 @@ const FolderFileCard: React.FC<FileCardProps> = ({
       key: "1",
       label: <small onClick={() => onClick?.(type, id)}>Open</small>,
     },
-    {
-      key: "2",
-      label: <small onClick={() => handleDownload?.(type, id)}>Download</small>,
-    },
-    {
-      key: "3",
-      label: (
-        <small
-          onClick={() =>
-            dispatch(
-              setCommonModal({
-                title: "Rename",
-                content: <RenameFolder id={id} name={name} type={type} />,
-                show: true,
-                width: 420,
-              })
-            )
-          }
-        >
-          Rename
-        </small>
-      ),
-    },
+    ...(type !== "folder"
+      ? [
+          {
+            key: "2",
+            label: <small onClick={() => handleDownload?.(type, id)}>Download</small>,
+          },
+        ]
+      : []),
+    ...(showRename
+      ? [
+          {
+            key: "3",
+            label: (
+              <small
+                onClick={() =>
+                  dispatch(
+                    setCommonModal({
+                      title: "Rename",
+                      content: <RenameFolder id={id} name={name} type={type} />,
+                      show: true,
+                      width: 420,
+                    })
+                  )
+                }
+              >
+                Rename
+              </small>
+            ),
+          },
+        ]
+      : []),
     ...(showDelete
       ? [
           {
@@ -408,7 +285,6 @@ const FolderFileCard: React.FC<FileCardProps> = ({
       }`}
       onClick={() => onClick?.(type, id)}
     >
-      {/* Checkbox for selection */}
       <Flex justify="space-between" align="center">
         <div>
           {showCheckbox && (
@@ -425,25 +301,19 @@ const FolderFileCard: React.FC<FileCardProps> = ({
             </div>
           )}
         </div>
-        {showThreeDot ? (
-          <div
-            className="flex justify-end"
-            onClick={(e) => e.stopPropagation()}
-          >
+        {showThreeDot && (
+          <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
             <Dropdown trigger={["click"]} menu={{ items }}>
               <BsThreeDotsVertical className="opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
             </Dropdown>
           </div>
-        ) : null}
+        )}
       </Flex>
       <div className="flex flex-col items-center text-center space-y-1">
-        {/* File/Folder Icon with Sync Status */}
         <div className="relative mb-1">
           {getFileIcon(name, type)}
           {getSyncStatusIcon()}
         </div>
-
-        {/* File Name with Extension Label */}
         <div className="w-full">
           <Tooltip title={name}>
             <Typography.Text
@@ -455,40 +325,24 @@ const FolderFileCard: React.FC<FileCardProps> = ({
             </Typography.Text>
           </Tooltip>
           {type !== "folder" && (
-            <Typography.Text
-              className={`text-[8px] font-medium block ${getFileLabelColor(
-                name,
-                type
-              )}`}
-            >
+            <Typography.Text className={`text-[8px] font-medium block`}>
               {name.split(".").pop()?.toUpperCase() || "FILE"}
             </Typography.Text>
           )}
         </div>
-
-        {/* Metadata */}
         <div className="w-full space-y-0.5">
           {createdBy && (
-            <Typography.Text
-              className="text-[8px] text-gray-500 block"
-              style={{ fontSize: "8px" }}
-            >
+            <Typography.Text className="text-[8px] text-gray-500 block">
               By {truncateName(createdBy, 10)}
             </Typography.Text>
           )}
           {createdAt && (
-            <Typography.Text
-              className="text-[8px] text-gray-400 block"
-              style={{ fontSize: "8px" }}
-            >
+            <Typography.Text className="text-[8px] text-gray-400 block">
               {formatDate(createdAt)}
             </Typography.Text>
           )}
           {size && type !== "folder" && (
-            <Typography.Text
-              className="text-[8px] text-gray-400 block"
-              style={{ fontSize: "8px" }}
-            >
+            <Typography.Text className="text-[8px] text-gray-400 block">
               {size}
             </Typography.Text>
           )}
