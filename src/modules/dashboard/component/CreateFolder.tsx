@@ -3,14 +3,20 @@ import { Button, Card, Col, Form, Input, Row } from "antd";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { setCommonModal } from "../../../app/slice/modalSlice";
-import { useCreateFolderMutation } from "../api/dashboardEndPoints";
+import {
+  useCreateFolderMutation,
+  useGetFolderListQuery,
+} from "../api/dashboardEndPoints";
 import { ICreateFolder } from "../types/dashboardTypes";
+import { useWatch } from "antd/es/form/Form";
 
 const CreateFolder = ({ parentId }: { parentId?: number | null }) => {
   const [form] = Form.useForm();
+  const name = useWatch("name", form);
   const dispatch = useDispatch();
   const [create, { isSuccess, isLoading }] = useCreateFolderMutation();
-
+  const { data } = useGetFolderListQuery();
+  const isExist = data?.data?.some((item) => item.name === name);
   const onFinish = (data: ICreateFolder) => {
     const formattedData = { ...data };
     if (parentId) {
@@ -36,6 +42,16 @@ const CreateFolder = ({ parentId }: { parentId?: number | null }) => {
               {
                 required: true,
                 message: "Please enter your folder name",
+              },
+              {
+                validator: (_, value) => {
+                  if (isExist) {
+                    return Promise.reject(
+                      new Error("Folder name already exists!")
+                    );
+                  }
+                  return Promise.resolve();
+                },
               },
             ]}
           >

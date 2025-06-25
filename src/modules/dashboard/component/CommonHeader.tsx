@@ -26,6 +26,7 @@ import { setCommonModal } from "../../../app/slice/modalSlice";
 import CreateFolder from "./CreateFolder";
 import { useDispatch } from "react-redux";
 import { useUploadFilesMutation } from "../api/dashboardEndPoints";
+import { rangePreset } from "../../../common/rangePreset/rangePreset";
 
 interface Props {
   title: string;
@@ -58,7 +59,11 @@ const CommonHeader = ({
         key,
         message: `Uploading: ${file.name}`,
         description: (
-          <Progress percent={Math.round(progress)} size="small" showInfo={false} />
+          <Progress
+            percent={Math.round(progress)}
+            size="small"
+            showInfo={false}
+          />
         ),
         icon: <CloudUploadOutlined style={{ color: "#1890ff" }} />,
         duration: 0,
@@ -162,20 +167,32 @@ const CommonHeader = ({
 
   const uploadMenu = (
     <Menu onClick={({ key }) => handleMenuClick(key)}>
-      <Menu.Item key="files" icon={<CloudUploadOutlined style={{ color: "#1890ff" }} />}>
+      <Menu.Item
+        key="files"
+        icon={<CloudUploadOutlined style={{ color: "#1890ff" }} />}
+      >
         Upload Files
       </Menu.Item>
       {/* <Menu.Item key="folder-upload" icon={<FolderOpenOutlined style={{ color: "#4CAF50" }} />}>
         Upload Folder
       </Menu.Item> */}
       <Menu.Divider />
-      <Menu.Item key="word" icon={<FileWordOutlined style={{ color: "#1E90FF" }} />}>
+      <Menu.Item
+        key="word"
+        icon={<FileWordOutlined style={{ color: "#1E90FF" }} />}
+      >
         Word Document
       </Menu.Item>
-      <Menu.Item key="excel" icon={<FileExcelOutlined style={{ color: "#4CAF50" }} />}>
+      <Menu.Item
+        key="excel"
+        icon={<FileExcelOutlined style={{ color: "#4CAF50" }} />}
+      >
         Excel Workbook
       </Menu.Item>
-      <Menu.Item key="powerpoint" icon={<FilePptOutlined style={{ color: "#FF5722" }} />}>
+      <Menu.Item
+        key="powerpoint"
+        icon={<FilePptOutlined style={{ color: "#FF5722" }} />}
+      >
         PowerPoint
       </Menu.Item>
     </Menu>
@@ -231,14 +248,45 @@ const CommonHeader = ({
             placeholder="File Type"
             allowClear
             options={[
-              { label: <><FileWordOutlined className="text-blue-600" /> Word</>, value: "docx" },
-              { label: <><FileExcelOutlined className="text-green-600" /> Excel</>, value: "xlsx" },
-              { label: <><FilePptOutlined className="text-red-600" /> PowerPoint</>, value: "pptx" },
-              { label: <><FilePdfOutlined className="text-gray-600" /> PDF</>, value: "pdf" },
-              
+              {
+                label: (
+                  <>
+                    <FileWordOutlined className="text-blue-600" /> Word
+                  </>
+                ),
+                value: "docx",
+              },
+              {
+                label: (
+                  <>
+                    <FileExcelOutlined className="text-green-600" /> Excel
+                  </>
+                ),
+                value: "xlsx",
+              },
+              {
+                label: (
+                  <>
+                    <FilePptOutlined className="text-red-600" /> PowerPoint
+                  </>
+                ),
+                value: "pptx",
+              },
+              {
+                label: (
+                  <>
+                    <FilePdfOutlined className="text-gray-600" /> PDF
+                  </>
+                ),
+                value: "pdf",
+              },
             ]}
           />
-          <DatePicker.RangePicker className="rounded-full w-full md:w-auto" onChange={onDateRangeChange} />
+          <DatePicker.RangePicker
+            presets={rangePreset}
+            className="rounded-full w-full md:w-auto"
+            onChange={onDateRangeChange}
+          />
         </div>
       </div>
     </div>
