@@ -32,6 +32,8 @@ import logo from "../../assets/logo.png";
 import { setCommonModal } from "../../app/slice/modalSlice";
 import ChangeEmployeePassword from "../navBar/ChangePassword";
 import { RiLockPasswordLine } from "react-icons/ri";
+import { useGetFileAndFolderListQuery } from "../../modules/dashboard/api/dashboardEndPoints";
+import GlobalSearch from "../globalSearch/globalSearch";
 
 const { useBreakpoint } = Grid;
 const { Header, Sider, Content, Footer } = Layout;
@@ -43,6 +45,14 @@ export const AppLayout: React.FC = () => {
   const [sidebarWidth, setSidebarWidth] = useState(280);
   const [openKeys, setOpenKeys] = useState<string[]>([]);
   const [currentSelection, setCurrentSelection] = useState("");
+
+  const [filter, setFilter] = useState({ key: "" });
+
+  const { data, isLoading } = useGetFileAndFolderListQuery({ ...filter });
+
+  const handleSearch = (searchTerm: string) => {
+    setFilter({ key: searchTerm });
+  };
 
   const location = useLocation();
   const screens = useBreakpoint();
@@ -299,19 +309,20 @@ export const AppLayout: React.FC = () => {
           <div style={{ flex: 1 }} />
           <div style={{ flex: 2, display: "flex", justifyContent: "center" }}>
             {!isTablet && (
-              <Input
-                placeholder="Search anything..."
-                prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
-                style={{
-                  width: screens.xl ? 400 : 300,
-                  borderRadius: 25,
-                  background: "#fafafa",
-                  border: "1px solid #e0e0e0",
-                  paddingLeft: 16,
-                  paddingRight: 16,
-                }}
-                allowClear
-              />
+              // <Input
+              //   placeholder="Search ddd anything..."
+              //   prefix={<SearchOutlined style={{ color: "#bfbfbf" }} />}
+              //   style={{
+              //     width: screens.xl ? 400 : 300,
+              //     borderRadius: 25,
+              //     background: "#fafafa",
+              //     border: "1px solid #e0e0e0",
+              //     paddingLeft: 16,
+              //     paddingRight: 16,
+              //   }}
+              //   allowClear
+              // />
+              <GlobalSearch />
             )}
           </div>
           <div style={{ flex: 1, display: "flex", justifyContent: "flex-end" }}>

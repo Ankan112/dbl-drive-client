@@ -1,7 +1,5 @@
-import { HomeOutlined } from "@ant-design/icons";
-import { Breadcrumb, Empty, message } from "antd";
-import { Modal } from "antd";
 import { FileExcelOutlined, FileUnknownOutlined } from "@ant-design/icons";
+import { Breadcrumb, Empty, message, Modal } from "antd";
 import { useLocation, useNavigate } from "react-router";
 import { DownloadURL } from "../../../app/slice/baseQuery";
 import {
@@ -9,8 +7,8 @@ import {
   useLazyGetFileDetailsQuery,
 } from "../api/dashboardEndPoints";
 import { Files, NextFolder } from "../types/dashboardTypes";
-import FolderFileCard from "./FolderFileCard";
 import CommonHeader from "./CommonHeader";
+import FolderFileCard from "./FolderFileCard";
 
 const HomeDetails = () => {
   const location = useLocation();

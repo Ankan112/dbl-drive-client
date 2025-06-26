@@ -131,6 +131,7 @@ const FolderFileCard: React.FC<FileCardProps> = ({
         return <FileTextOutlined className="text-xl text-gray-600" />;
       case "mp3":
         return <AudioOutlined className="text-xl text-blue-600" />;
+      case "mkv":
       case "mp4":
       case "mov":
       case "mpeg":
@@ -192,17 +193,48 @@ const FolderFileCard: React.FC<FileCardProps> = ({
   const getSyncStatusIcon = () => {
     switch (syncStatus) {
       case "online":
-        return <CloudOutlined className="text-xs text-blue-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
+        return (
+          <CloudOutlined
+            className="text-xs text-blue-500 absolute bottom-0 right-0"
+            style={{ fontSize: "8px" }}
+          />
+        );
       case "offline":
-        return <CheckCircleOutlined className="text-xs text-green-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
+        return (
+          <CheckCircleOutlined
+            className="text-xs text-green-500 absolute bottom-0 right-0"
+            style={{ fontSize: "8px" }}
+          />
+        );
       case "syncing":
-        return <SyncOutlined spin className="text-xs text-blue-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
+        return (
+          <SyncOutlined
+            spin
+            className="text-xs text-blue-500 absolute bottom-0 right-0"
+            style={{ fontSize: "8px" }}
+          />
+        );
       case "error":
-        return <CloseCircleOutlined className="text-xs text-red-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
+        return (
+          <CloseCircleOutlined
+            className="text-xs text-red-500 absolute bottom-0 right-0"
+            style={{ fontSize: "8px" }}
+          />
+        );
       case "shared":
-        return <UserOutlined className="text-xs text-blue-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
+        return (
+          <UserOutlined
+            className="text-xs text-blue-500 absolute bottom-0 right-0"
+            style={{ fontSize: "8px" }}
+          />
+        );
       case "locked":
-        return <LockOutlined className="text-xs text-gray-500 absolute bottom-0 right-0" style={{ fontSize: "8px" }} />;
+        return (
+          <LockOutlined
+            className="text-xs text-gray-500 absolute bottom-0 right-0"
+            style={{ fontSize: "8px" }}
+          />
+        );
       default:
         return null;
     }
@@ -221,7 +253,9 @@ const FolderFileCard: React.FC<FileCardProps> = ({
     if (fileName.length <= maxLength) return fileName;
     const extensionMatch = fileName.match(/\.([^.]+)$/);
     const extension = extensionMatch ? `.${extensionMatch[1]}` : "";
-    const nameWithoutExtension = extensionMatch ? fileName.slice(0, -extension.length) : fileName;
+    const nameWithoutExtension = extensionMatch
+      ? fileName.slice(0, -extension.length)
+      : fileName;
     const availableLength = maxLength - extension.length - 3;
     if (availableLength <= 0) return fileName.slice(0, maxLength) + "...";
     return nameWithoutExtension.slice(0, availableLength) + "..." + extension;
@@ -236,7 +270,9 @@ const FolderFileCard: React.FC<FileCardProps> = ({
       ? [
           {
             key: "2",
-            label: <small onClick={() => handleDownload?.(type, id)}>Download</small>,
+            label: (
+              <small onClick={() => handleDownload?.(type, id)}>Download</small>
+            ),
           },
         ]
       : []),
@@ -302,7 +338,10 @@ const FolderFileCard: React.FC<FileCardProps> = ({
           )}
         </div>
         {showThreeDot && (
-          <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="flex justify-end"
+            onClick={(e) => e.stopPropagation()}
+          >
             <Dropdown trigger={["click"]} menu={{ items }}>
               <BsThreeDotsVertical className="opacity-0 group-hover:opacity-100 transition-opacity duration-100" />
             </Dropdown>
