@@ -13,11 +13,6 @@ export const sideBarItems = (employee_id: string, roleId: number) => {
       icon: <AiOutlineHome size={20} />,
     },
     {
-      label: <Link to="/">Shared Files</Link>,
-      key: "/shared",
-      icon: <AiOutlineHome size={20} />,
-    },
-    {
       label: <Link to="/my-file">My Files</Link>,
       key: "/my-file",
       icon: <FaRegFolderClosed size={20} />,

@@ -47,6 +47,7 @@ export const routers = createBrowserRouter([
     path: "/dashboard",
     element: <Navigate to="/" replace />,
   },
+  
   {
     path: "/",
     // element: <AppLayout />,
