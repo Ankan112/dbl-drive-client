@@ -1,8 +1,8 @@
 import { DeleteOutlined, RollbackOutlined } from "@ant-design/icons";
 import { Button, Checkbox, Pagination, Tooltip } from "antd";
 import { useState } from "react";
-import CommonHeader from "../../dashboard/component/CommonHeader";
-import FolderFileCard from "../../dashboard/component/FolderFileCard";
+import CommonHeader from "../../Shared/component/CommonHeader";
+import FolderFileCard from "../../Shared/component/FolderFileCard";
 import { IPaginationParams } from "../../myFile/types/myFileTypes";
 import {
   useGetRecycleBinListQuery,

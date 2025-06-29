@@ -17,11 +17,11 @@ import { DownloadURL } from "../../../app/slice/baseQuery";
 import {
   useGetFolderDetailsQuery,
   useLazyGetFileDetailsQuery,
-} from "../../dashboard/api/dashboardEndPoints";
-import FolderFileCard from "../../dashboard/component/FolderFileCard";
-import { Files, NextFolder } from "../../dashboard/types/dashboardTypes";
+} from "../../Shared/api/dashboardEndPoints";
+import FolderFileCard from "../../Shared/component/FolderFileCard";
+import { Files, NextFolder } from "../../Shared/types/dashboardTypes";
 import { useMoveToRecycleBinMutation } from "../../recycleBin/api/recycleBinEndpoint";
-import CommonHeader from "../../dashboard/component/CommonHeader";
+import CommonHeader from "../../Shared/component/CommonHeader";
 
 const MyFileDetails = () => {
   const location = useLocation();

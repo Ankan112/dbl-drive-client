@@ -23,7 +23,7 @@ import {
 import {
   useGetFileAndFolderListQuery,
   useLazyGetFileDetailsQuery,
-} from "../../modules/dashboard/api/dashboardEndPoints";
+} from "../../modules/Shared/api/dashboardEndPoints";
 import { DownloadURL } from "../../app/slice/baseQuery";
 import { useNavigate } from "react-router";
 

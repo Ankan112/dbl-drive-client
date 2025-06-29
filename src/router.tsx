@@ -10,11 +10,11 @@ import NotFound from "./components/notFound/NotFound";
 import UnauthorizePage from "./components/notFound/UnauthorizePage";
 import ProtectedRoute from "./utils/ProtectRoute";
 import RequireUser from "./utils/requireUser";
-import HomeDetails from "./modules/dashboard/component/HomeDetails";
+import HomeDetails from "./modules/Shared/component/HomeDetails";
 import MyFile from "./modules/myFile/page/MyFile";
 import RecycleBin from "./modules/recycleBin/page/RecycleBin";
 import MyFileDetails from "./modules/myFile/page/MyFileDetails";
-import Home from "./modules/dashboard/Pages/Home";
+import Home from "./modules/Shared/Pages/Shared";
 
 export const routers = createBrowserRouter([
   { path: "*", element: <NotFound /> },

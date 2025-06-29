@@ -32,7 +32,7 @@ import logo from "../../assets/logo.png";
 import { setCommonModal } from "../../app/slice/modalSlice";
 import ChangeEmployeePassword from "../navBar/ChangePassword";
 import { RiLockPasswordLine } from "react-icons/ri";
-import { useGetFileAndFolderListQuery } from "../../modules/dashboard/api/dashboardEndPoints";
+import { useGetFileAndFolderListQuery } from "../../modules/Shared/api/dashboardEndPoints";
 import GlobalSearch from "../globalSearch/globalSearch";
 
 const { useBreakpoint } = Grid;
