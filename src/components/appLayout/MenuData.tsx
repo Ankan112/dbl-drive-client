@@ -1,32 +1,32 @@
-import { LuLayoutDashboard } from "react-icons/lu";
-import { TbUserHexagon } from "react-icons/tb";
 import { Link } from "react-router-dom";
 import { IMenuData } from "../../../Types/MenuData";
-import { AiOutlineHome } from "react-icons/ai";
-import { FaRegFolderClosed } from "react-icons/fa6";
-import { RiDeleteBinLine } from "react-icons/ri";
+import { FaFolderClosed } from "react-icons/fa6";
+import { ImBin2 } from "react-icons/im";
+import { SiSharex } from "react-icons/si"
+import { FaHome } from "react-icons/fa";
 export const sideBarItems = (employee_id: string, roleId: number) => {
   let menuData: IMenuData[] = [
     {
       label: <Link to="/">Home</Link>,
       key: "/",
-      icon: <AiOutlineHome size={20} />,
+      icon: <FaHome size={20} />,
+    },
+    {
+      label: <Link to="/shared">Shared Files</Link>,
+      key: "/shared",
+      icon: <SiSharex size={20} />,
     },
     {
       label: <Link to="/my-file">My Files</Link>,
       key: "/my-file",
-      icon: <FaRegFolderClosed size={20} />,
+      icon: <FaFolderClosed size={20} />,
     },
     {
       label: <Link to="/recycle-bin">Recycle Bin</Link>,
       key: "/recycle-bin",
-      icon: <RiDeleteBinLine size={20} />,
+      icon: <ImBin2 size={20} />,
     },
-    // {
-    //   label: <Link to="/about">About</Link>,
-    //   key: "/",
-    //   icon: <TbUserHexagon size={20} />,
-    // },
+    
   ];
   return menuData;
 };

@@ -14,7 +14,8 @@ import HomeDetails from "./modules/Shared/component/HomeDetails";
 import MyFile from "./modules/myFile/page/MyFile";
 import RecycleBin from "./modules/recycleBin/page/RecycleBin";
 import MyFileDetails from "./modules/myFile/page/MyFileDetails";
-import Home from "./modules/Shared/Pages/Shared";
+import Shared from "./modules/Shared/Pages/Shared";
+import Home from "./modules/Dashboard/page/Dashboard";
 
 export const routers = createBrowserRouter([
   { path: "*", element: <NotFound /> },
@@ -57,6 +58,10 @@ export const routers = createBrowserRouter([
         path: "/",
         // element: <RequireUser children={<DashboardDemo />} />,
         element: <Home />,
+      },
+      {
+        path: "/shared",
+        element: <Shared />,
       },
       {
         path: "/folder/*",
