@@ -194,7 +194,7 @@ const HomeDetails = () => {
         <Breadcrumb style={{ marginTop: 16 }}>
           {/* 🏠 Home Icon */}
           <Breadcrumb.Item
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/shared")}
             // style={{ cursor: "pointer" }}
           >
             Home

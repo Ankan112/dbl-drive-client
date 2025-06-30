@@ -317,85 +317,85 @@ export const AppLayout: React.FC = () => {
         />
 
         <div
-  style={{
-    padding: collapsed ? "12px 6px" : "16px 12px",
-    textAlign: "center",
-    borderBottom: `1px solid ${colorPrimary}06`,
-    background: `linear-gradient(135deg, ${colorPrimary}03, transparent)`,
-    position: "relative",
-    zIndex: 1,
-  }}
->
-  {collapsed ? (
-    <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setCollapsed(false)}>
-      <Tooltip title="Expand Menu" placement="right">
-        <Avatar
-          size={40}
-          src={logo}
           style={{
-            cursor: "pointer",
-            border: `2px solid ${colorPrimary}15`,
-            transition: "all 0.3s ease",
-            pointerEvents: "auto",
+            padding: collapsed ? "12px 6px" : "16px 12px",
+            textAlign: "center",
+            borderBottom: `1px solid ${colorPrimary}06`,
+            background: `linear-gradient(135deg, ${colorPrimary}03, transparent)`,
+            position: "relative",
+            zIndex: 1,
           }}
-          className="logo-avatar"
-        />
-      </Tooltip>
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)", // Center perfectly
-          width: 46, // Slightly larger than Avatar size (40 + 2*3 for border)
-          height: 46, // Equal width and height for perfect circle
-          border: `1px solid ${colorPrimary}30`,
-          borderRadius: "50%", // Ensure circular shape
-          animation: "pulse 2s ease-in-out infinite",
-          zIndex: -1, // Behind Avatar
-          boxSizing: "border-box", // Prevent border affecting dimensions
-        }}
-      />
-    </div>
-  ) : (
-    <div
-      style={{
-        cursor: "pointer",
-        transition: "all 0.3s ease",
-        position: "relative",
-      }}
-      onClick={() => setCollapsed(true)}
-      className="logo-container"
-    >
-      <Image
-        height={isTablet ? 100 : 120}
-        preview={false}
-        src={logo}
-        style={{
-          borderRadius: 10,
-          filter: "drop-shadow(0 6px 15px rgba(0,0,0,0.1))",
-          transition: "all 0.3s ease",
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "110%",
-          height: "110%",
-          background: `radial-gradient(circle, ${colorPrimary}15 0%, transparent 70%)`,
-          borderRadius: 12,
-          opacity: 0,
-          transition: "opacity 0.3s ease",
-          pointerEvents: "none",
-        }}
-        className="logo-glow"
-      />
-    </div>
-  )}
-</div>
+        >
+          {collapsed ? (
+            <div style={{ position: "relative", cursor: "pointer" }} onClick={() => setCollapsed(false)}>
+              <Tooltip title="Expand Menu" placement="right">
+                <Avatar
+                  size={40}
+                  src={logo}
+                  style={{
+                    cursor: "pointer",
+                    border: `2px solid ${colorPrimary}15`,
+                    transition: "all 0.3s ease",
+                    pointerEvents: "auto",
+                  }}
+                  className="logo-avatar"
+                />
+              </Tooltip>
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)", // Center perfectly
+                  width: 46, // Slightly larger than Avatar size (40 + 2*3 for border)
+                  height: 46, // Equal width and height for perfect circle
+                  border: `1px solid ${colorPrimary}30`,
+                  borderRadius: "50%", // Ensure circular shape
+                  animation: "pulse 2s ease-in-out infinite",
+                  zIndex: -1, // Behind Avatar
+                  boxSizing: "border-box", // Prevent border affecting dimensions
+                }}
+              />
+            </div>
+          ) : (
+            <div
+              style={{
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+                position: "relative",
+              }}
+              onClick={() => setCollapsed(true)}
+              className="logo-container"
+            >
+              <Image
+                height={isTablet ? 100 : 120}
+                preview={false}
+                src={logo}
+                style={{
+                  borderRadius: 10,
+                  filter: "drop-shadow(0 6px 15px rgba(0,0,0,0.1))",
+                  transition: "all 0.3s ease",
+                }}
+              />
+              <div
+                style={{
+                  position: "absolute",
+                  top: "50%",
+                  left: "50%",
+                  transform: "translate(-50%, -50%)",
+                  width: "110%",
+                  height: "110%",
+                  background: `radial-gradient(circle, ${colorPrimary}15 0%, transparent 70%)`,
+                  borderRadius: 12,
+                  opacity: 0,
+                  transition: "opacity 0.3s ease",
+                  pointerEvents: "none",
+                }}
+                className="logo-glow"
+              />
+            </div>
+          )}
+        </div>
 
         <div
           style={{
@@ -609,79 +609,11 @@ export const AppLayout: React.FC = () => {
             background: "linear-gradient(135deg, #f9fafb 0%, #f1f5f9 100%)",
             minHeight: "calc(100vh - 128px)",
             overflowX: "hidden",
-            position: "relative"
+            position: "relative",
+            padding: isTablet ? 16 : 24 // Added responsive padding
           }}
         >
-          <div
-            style={{
-              position: "absolute",
-              top: 0,
-              right: 0,
-              width: 500,
-              height: 500,
-              background: `conic-gradient(from 0deg, ${colorPrimary}03 0%, transparent 50%)`,
-              borderRadius: "50%",
-              transform: "translate(50%, -50%)",
-              pointerEvents: "none",
-              animation: "rotate 15s linear infinite"
-            }}
-          />
-          <div
-            style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              width: 300,
-              height: 300,
-              background: `radial-gradient(circle, ${colorPrimary}03 0%, transparent 70%)`,
-              borderRadius: "50%",
-              transform: "translate(-50%, 50%)",
-              pointerEvents: "none",
-              animation: "float 7s ease-in-out infinite"
-            }}
-          />
-          {[...Array(4)].map((_, i) => (
-            <div
-              key={i}
-              style={{
-                position: "absolute",
-                width: 3,
-                height: 3,
-                background: `${colorPrimary}30`,
-                borderRadius: "50%",
-                top: `${15 + i * 20}%`,
-                left: `${10 + i * 25}%`,
-                animation: `float ${2.5 + i}s ease-in-out infinite`,
-                animationDelay: `${i * 0.4}s`
-              }}
-            />
-          ))}
-
-          <div
-            style={{
-              padding: isTablet ? 12 : 20, // Reduced padding
-              background: `linear-gradient(135deg, ${colorBgContainer} 0%, ${colorPrimary}01 100%)`,
-              margin: isTablet ? 8 : 16, // Reduced margin
-              borderRadius: 16,
-              boxShadow: "0 6px 20px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.1)",
-              minHeight: "calc(100vh - 190px)",
-              border: `1px solid ${colorPrimary}08`,
-              position: "relative",
-              overflow: "hidden"
-            }}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 1,
-                background: `linear-gradient(90deg, transparent, ${colorPrimary}20, transparent)`
-              }}
-            />
-            <Outlet />
-          </div>
+          <Outlet />
         </Content>
 
         <Footer

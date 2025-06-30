@@ -475,7 +475,7 @@ const GlobalSearch: React.FC = () => {
               prefix={
                 <SearchOutlined className="search-icon" />
               }
-              placeholder="Search files and folders..."
+              placeholder="Search files and folders Or User Files..."
               value={filter.key}
               onChange={(e) => handleSearch(e.target.value)}
               allowClear
