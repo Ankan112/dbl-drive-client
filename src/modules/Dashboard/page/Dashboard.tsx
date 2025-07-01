@@ -89,7 +89,7 @@ const Dashboard: React.FC = () => {
 
   return (
     <div style={{
-      minHeight: '100vh',
+      minHeight: 'auto',
       fontFamily: 'Arial, sans-serif',
     }}>
       {/* Category Cards */}

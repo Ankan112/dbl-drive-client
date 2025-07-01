@@ -7,10 +7,10 @@ import {
 import { setLogout } from "../features/userSlice";
 import { RootState } from "../store/store";
 
-const baseURL = "http://localhost:3003/api/v1";
+const baseURL = "https://portal.dbl-group.com:3003/api/v1";
 
 export const socket_url = "https://test.socket.com";
-export const DownloadURL = "http://localhost:3003"; //! avoid / end of the line otherwise image and pdf won't work!
+export const DownloadURL = "https://portal.dbl-group.com"; //! avoid / end of the line otherwise image and pdf won't work!
 
 export const baseQuery = fetchBaseQuery({
   baseUrl: baseURL,

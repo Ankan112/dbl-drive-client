@@ -110,111 +110,56 @@ const MyFile = () => {
 
       const extension = filePath.split(".").pop()?.toLowerCase();
 
-      // List of extensions that should open in Google Docs
-      const googleDocsExtensions = ["doc", "docx", "ppt", "pptx", "txt", "rtf"];
+      // Supported for Office Viewer or Browser Viewing
+      const officeViewerExtensions = ["doc", "docx", "ppt", "pptx", "xls", "xlsx"];
+      const googleViewerExtensions = ["txt", "rtf", "odt"];
+      const pdfExtension = "pdf";
 
-      // List of Excel formats we want to confirm + download
-      const excelExtensions = ["xls", "xlsx"];
-
-      // List of unsupported formats that should trigger direct download
+      // Extensions not supported for viewing
       const unsupportedExtensions = [
-        "exe",
-        "mkv",
-        "zip",
-        "tar",
-        "rar",
-        "js",
-        "bat",
-        "cmd",
-        "sql",
+        "exe", "mkv", "zip", "tar", "rar", "js", "bat", "cmd", "sql",
       ];
 
-      // Handle Excel files: show confirmation modal for download
-      if (excelExtensions.includes(extension || "")) {
-        Modal.confirm({
-          title: "Download Excel File",
-          icon: (
-            <FileExcelOutlined style={{ fontSize: "24px", color: "#4caf50" }} />
-          ), // Excel icon
-          content:
-            "Excel files can't be opened directly in the browser. Do you want to download this file?",
-          okText: "Yes, Download",
-          cancelText: "No",
-          centered: true, // Center the modal
-          okButtonProps: {
-            style: { backgroundColor: "#4caf50", color: "#fff" }, // Green button
-          },
-          cancelButtonProps: {
-            style: { backgroundColor: "#f44336", color: "#fff" }, // Red button
-          },
-          onOk() {
-            // Trigger download
-            const a = document.createElement("a");
-            a.href = filePath;
-            a.download = filePath.split("/").pop() || "file.xlsx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          },
-          onCancel() {
-            console.log("Download canceled");
-          },
-        });
-        return; // Stop further processing
-      }
-
-      // Handle unsupported files (e.g., .exe, .zip, .sql)
+      // If unsupported, download directly
       if (unsupportedExtensions.includes(extension || "")) {
-        Modal.confirm({
-          title: "Unsupported File Type",
-          icon: (
-            <FileUnknownOutlined
-              style={{ fontSize: "24px", color: "#f44336" }}
-            />
-          ), // Unknown file icon
-          content: `The file type .${extension} is not supported for viewing in the browser. Would you like to download it?`,
-          okText: "Yes, Download",
-          cancelText: "No",
-          centered: true, // Center the modal
-          okButtonProps: {
-            style: { backgroundColor: "#4caf50", color: "#fff" }, // Green button
-          },
-          cancelButtonProps: {
-            style: { backgroundColor: "#f44336", color: "#fff" }, // Red button
-          },
-          onOk() {
-            // Trigger download for unsupported files
-            const a = document.createElement("a");
-            a.href = filePath;
-            a.download = filePath.split("/").pop() || "file";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          },
-          onCancel() {
-            console.log("Download canceled");
-          },
-        });
-        return; // Stop further processing
+        const a = document.createElement("a");
+        a.href = filePath;
+        a.download = filePath.split("/").pop() || "file";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        return;
       }
 
-      // Handle all other cases: Open in browser (Google Docs Viewer or other formats)
-      let urlToOpen = filePath;
-
-      if (googleDocsExtensions.includes(extension || "")) {
-        // Convert file URL to Google Docs viewer URL
-        urlToOpen = `https://docs.google.com/viewer?url=${encodeURIComponent(
-          filePath
-        )}`;
+      // Open in Office Viewer
+      if (officeViewerExtensions.includes(extension || "")) {
+        const officeViewerUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(filePath)}`;
+        window.open(officeViewerUrl, "_blank");
+        return;
       }
 
-      // Open all other files in a new tab
-      window.open(urlToOpen, "_blank");
+      // Open in Google Docs Viewer
+      if (googleViewerExtensions.includes(extension || "")) {
+        const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(filePath)}`;
+        window.open(googleViewerUrl, "_blank");
+        return;
+      }
+
+      // Open PDF or any other directly supported format
+      if (extension === pdfExtension || extension === "jpg" || extension === "png") {
+        window.open(filePath, "_blank");
+        return;
+      }
+
+      // Fallback: Open directly
+      window.open(filePath, "_blank");
+
     } catch (error) {
       console.error("Failed to load file:", error);
       message.error("Failed to load file.");
     }
   };
+
 
   const handleDownload = async (type: string, id: number) => {
     if (type === "folder") {

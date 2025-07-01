@@ -90,127 +90,72 @@ const MyFileDetails = () => {
     return;
   };
   const handleFileCardClick = async (type: string, id: number) => {
-    if (type === "folder") {
-      navigate(`/my-file/${id}`);
+  if (type === "folder") {
+    navigate(`/my-file/${id}`);
+    return;
+  }
+
+  try {
+    const res = await fetchFileDetails(id); // Fetch file details manually
+    const filePath = `${DownloadURL}/media/${res?.data?.data?.path_name}`;
+
+    if (!filePath) {
+      message.error("File path not found!");
       return;
     }
 
-    try {
-      const res = await fetchFileDetails(id); // Fetch file details manually
-      const filePath = `${DownloadURL}/media/${res?.data?.data?.path_name}`;
+    const extension = filePath.split(".").pop()?.toLowerCase();
 
-      if (!filePath) {
-        message.error("File path not found!");
-        return;
-      }
+    // Office-supported formats
+    const officeViewerExtensions = ["doc", "docx", "ppt", "pptx", "xls", "xlsx"];
+    const googleViewerExtensions = ["txt", "rtf", "odt"];
+    const directViewExtensions = ["pdf", "jpg", "jpeg", "png", "gif", "mp4", "webm"];
 
-      const extension = filePath.split(".").pop()?.toLowerCase();
+    // Unsupported formats that should trigger direct download
+    const unsupportedExtensions = [
+      "exe", "mkv", "zip", "tar", "rar", "js", "bat", "cmd", "sql",
+    ];
 
-      // List of extensions that should open in Google Docs
-      const googleDocsExtensions = ["doc", "docx", "ppt", "pptx", "txt", "rtf"];
-
-      // List of Excel formats we want to confirm + download
-      const excelExtensions = ["xls", "xlsx"];
-
-      // List of unsupported formats that should trigger direct download
-      const unsupportedExtensions = [
-        "exe",
-        "mkv",
-        "zip",
-        "tar",
-        "rar",
-        "js",
-        "bat",
-        "cmd",
-        "sql",
-      ];
-
-      // Handle Excel files: show confirmation modal for download
-      if (excelExtensions.includes(extension || "")) {
-        Modal.confirm({
-          title: "Download Excel File",
-          icon: (
-            <FileExcelOutlined style={{ fontSize: "24px", color: "#4caf50" }} />
-          ), // Excel icon
-          content:
-            "Excel files can't be opened directly in the browser. Do you want to download this file?",
-          okText: "Yes, Download",
-          cancelText: "No",
-          centered: true, // Center the modal
-          okButtonProps: {
-            style: { backgroundColor: "#4caf50", color: "#fff" }, // Green button
-          },
-          cancelButtonProps: {
-            style: { backgroundColor: "#f44336", color: "#fff" }, // Red button
-          },
-          onOk() {
-            // Trigger download
-            const a = document.createElement("a");
-            a.href = filePath;
-            a.download = filePath.split("/").pop() || "file.xlsx";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          },
-          onCancel() {
-            console.log("Download canceled");
-          },
-        });
-        return; // Stop further processing
-      }
-
-      // Handle unsupported files (e.g., .exe, .zip, .sql)
-      if (unsupportedExtensions.includes(extension || "")) {
-        Modal.confirm({
-          title: "Unsupported File Type",
-          icon: (
-            <FileUnknownOutlined
-              style={{ fontSize: "24px", color: "#f44336" }}
-            />
-          ), // Unknown file icon
-          content: `The file type .${extension} is not supported for viewing in the browser. Would you like to download it?`,
-          okText: "Yes, Download",
-          cancelText: "No",
-          centered: true, // Center the modal
-          okButtonProps: {
-            style: { backgroundColor: "#4caf50", color: "#fff" }, // Green button
-          },
-          cancelButtonProps: {
-            style: { backgroundColor: "#f44336", color: "#fff" }, // Red button
-          },
-          onOk() {
-            // Trigger download for unsupported files
-            const a = document.createElement("a");
-            a.href = filePath;
-            a.download = filePath.split("/").pop() || "file";
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-          },
-          onCancel() {
-            console.log("Download canceled");
-          },
-        });
-        return; // Stop further processing
-      }
-
-      // Handle all other cases: Open in browser (Google Docs Viewer or other formats)
-      let urlToOpen = filePath;
-
-      if (googleDocsExtensions.includes(extension || "")) {
-        // Convert file URL to Google Docs viewer URL
-        urlToOpen = `https://docs.google.com/viewer?url=${encodeURIComponent(
-          filePath
-        )}`;
-      }
-
-      // Open all other files in a new tab
-      window.open(urlToOpen, "_blank");
-    } catch (error) {
-      console.error("Failed to load file:", error);
-      message.error("Failed to load file.");
+    // Handle unsupported files: download directly
+    if (unsupportedExtensions.includes(extension || "")) {
+      const a = document.createElement("a");
+      a.href = filePath;
+      a.download = filePath.split("/").pop() || "file";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      return;
     }
-  };
+
+    // Office Viewer for docx, pptx, xlsx, etc.
+    if (officeViewerExtensions.includes(extension || "")) {
+      const officeUrl = `https://view.officeapps.live.com/op/view.aspx?src=${encodeURIComponent(filePath)}`;
+      window.open(officeUrl, "_blank");
+      return;
+    }
+
+    // Google Docs Viewer for txt, rtf, odt
+    if (googleViewerExtensions.includes(extension || "")) {
+      const googleUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(filePath)}`;
+      window.open(googleUrl, "_blank");
+      return;
+    }
+
+    // Directly open PDFs, images, videos, etc.
+    if (directViewExtensions.includes(extension || "")) {
+      window.open(filePath, "_blank");
+      return;
+    }
+
+    // Fallback: just try to open the file
+    window.open(filePath, "_blank");
+
+  } catch (error) {
+    console.error("Failed to load file:", error);
+    message.error("Failed to load file.");
+  }
+};
+
 
   const handleFileDownload = async (type: string, id: number) => {
     if (type === "folder") {
