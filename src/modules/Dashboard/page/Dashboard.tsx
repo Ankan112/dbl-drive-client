@@ -79,7 +79,7 @@ const Dashboard: React.FC = () => {
   ];
 
   const categoryList = [
-    { label: 'PDF', key: 'pdf', icon: <FaFilePdf />, gradient: 'linear-gradient(135deg,rgb(255, 14, 14),rgb(253, 108, 120))' },
+    { label: 'PDF', key: 'pdf', icon: <FaFilePdf />, gradient: 'linear-gradient(135deg,rgb(230, 5, 5),rgb(157, 9, 21))' },
     { label: 'Word', key: 'docx', icon: <FaFileWord />, gradient: 'linear-gradient(135deg, #1e40af, #3b82f6)' },
     { label: 'Excel', key: 'xlsx', icon: <FaFileExcel />, gradient: 'linear-gradient(135deg, #059669, #10b981)' },
     { label: 'PowerPoint', key: 'pptx', icon: <FaFilePowerpoint />, gradient: 'linear-gradient(135deg, #dc2626, #f97316)' },

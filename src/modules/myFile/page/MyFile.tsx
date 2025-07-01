@@ -3,7 +3,7 @@ import {
   FileExcelOutlined,
   FileUnknownOutlined,
 } from "@ant-design/icons";
-import { Button, Checkbox, Modal, Pagination, Tooltip, message } from "antd";
+import { Button, Checkbox, Modal, Pagination, Popconfirm, Tooltip, message } from "antd";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router";
 import { DownloadURL } from "../../../app/slice/baseQuery";
@@ -229,18 +229,28 @@ const MyFile = () => {
         </Checkbox>
 
         <Tooltip title="Move to bin">
-          <Button
-            icon={<DeleteOutlined />}
-            type="primary"
-            danger
-            onClick={handleRecycleBin}
+          <Popconfirm
+            title="Do you want to delete?"
+            onConfirm={handleRecycleBin}
+            okText="Yes"
+            cancelText="No"
             disabled={
               selectedItems.fileIds.length === 0 &&
               selectedItems.folderIds.length === 0
             }
           >
-            Delete
-          </Button>
+            <Button
+              icon={<DeleteOutlined />}
+              type="primary"
+              danger
+              disabled={
+                selectedItems.fileIds.length === 0 &&
+                selectedItems.folderIds.length === 0
+              }
+            >
+              Delete
+            </Button>
+          </Popconfirm>
         </Tooltip>
       </div>
 
